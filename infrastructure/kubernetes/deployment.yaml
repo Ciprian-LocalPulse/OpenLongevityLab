@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openlongevity-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: openlongevity-api}
+  template:
+    metadata:
+      labels: {app: openlongevity-api}
+    spec:
+      containers:
+        - name: api
+          image: openlongevity:0.1.0
+          ports: [{containerPort: 8000}]
+          envFrom:
+            - configMapRef: {name: openlongevity-config}

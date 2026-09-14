@@ -1,0 +1,14 @@
+services:
+  api:
+    build: .
+    ports: ["8000:8000"]
+    environment:
+      OPENLONGEVITY_ENV: development
+      LOG_LEVEL: INFO
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: openlongevity
+      POSTGRES_USER: openlongevity
+      POSTGRES_PASSWORD: openlongevity
+    profiles: ["database"]
