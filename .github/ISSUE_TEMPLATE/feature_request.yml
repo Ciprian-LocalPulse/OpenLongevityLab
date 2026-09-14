@@ -1,0 +1,9 @@
+name: Feature request
+description: Propose a research or engineering improvement.
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: rationale
+    attributes: {label: Rationale, description: Explain the user or research need.}
+    validations: {required: true}

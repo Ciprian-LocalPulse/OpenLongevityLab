@@ -8,18 +8,17 @@ Open-source computational infrastructure for understanding, measuring, mapping, 
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
 
-OpenLongevity connects literature, biomarkers, multi-omics metadata, clinical-trial records, and mechanistic relationships into a provenance-preserving research workspace. The initial release is a lightweight, dependency-conscious foundation that can grow toward public scientific APIs and larger data stores.
+OpenLongevity connects literature, biomarkers, multi-omics metadata, clinical-trial records, and mechanistic relationships into a provenance-preserving research workspace. This release is a dependency-conscious foundation ready for public scientific API adapters and larger data stores.
 
 > Research use only. Not medical advice. OpenLongevity does not diagnose, prevent, treat, or cure disease and does not establish that any intervention extends human lifespan.
 
-## What is included
+## Core capabilities
 
 - Evidence records with study design, provenance, uncertainty, replication, and retraction status.
-- A transparent A–G evidence hierarchy that keeps preclinical and human findings distinct.
-- A research-gap detector for translational, replication, and source-concentration signals.
-- A small graph abstraction for gene, pathway, mechanism, biomarker, intervention, and study links.
-- Optional FastAPI routes at `/api/v1/health` and `/api/v1/evidence`.
-- A local CLI and synthetic fixtures clearly marked as non-scientific examples.
+- A transparent A–G hierarchy distinguishing in-vitro, animal, observational human, clinical, RCT, review, and computational evidence.
+- Research-gap signals for translational, replication, and source-concentration patterns.
+- A graph abstraction for gene, pathway, mechanism, biomarker, intervention, and study links.
+- Optional FastAPI routes and a typed TypeScript dashboard shell.
 
 ## Research pipeline
 
@@ -33,38 +32,34 @@ flowchart LR
     F --> G[Research dashboard]
 ```
 
-## Evidence levels
-
-`A` systematic review/meta-analysis, `B` randomized controlled human study, `C` clinical or prospective evidence, `D` observational human evidence, `E` animal evidence, `F` in-vitro evidence, `G` computational hypothesis. A retracted source remains visible for provenance but is excluded from active summaries.
-
 ## Quickstart
 
 ```bash
 python -m venv .venv
-# Windows: .venv\Scripts\activate
 pip install -e ".[dev,api]"
 pytest
 openlongevity evidence "cellular senescence"
 uvicorn 'openlongevity.api:create_app' --factory --reload
 ```
 
-Synthetic records are for software demonstrations only; they are not evidence for a scientific conclusion.
+Synthetic records are software fixtures only and are not scientific conclusions.
 
 ## Repository structure
 
 ```text
-src/openlongevity/   typed domain models, evidence engine, graph, API, CLI
-tests/                behavior-focused unit tests
-docs/                 architecture, security, and research notes
-schemas/              data contracts
-examples/             synthetic example records
-infrastructure/       container and deployment templates
+src/openlongevity/   typed scientific core, API, and CLI
+biomarkers/          biomarker catalog and interpretation guardrails
+literature/          source adapter contracts
+apps/web/             TypeScript dashboard shell
+packages/rust/        optional safe performance kernels
+sql/                  PostgreSQL schema
+docs/                 architecture, evidence, security, and wiki
 ```
 
-## Reproducibility and governance
+## Author
 
-Every imported record should retain its source identifier, retrieval date, licensing information, and transformation history. AI-generated interpretations are stored separately from source evidence and require human review. See [DATA_GOVERNANCE.md](DATA_GOVERNANCE.md), [REPRODUCIBILITY.md](REPRODUCIBILITY.md), and [SECURITY.md](SECURITY.md).
+**Ciprian Ștefan Pleșca** — Founder, Project Creator, Lead Maintainer, and Principal Author. See [AUTHORS.md](AUTHORS.md) and [CITATION.cff](CITATION.cff).
 
-## Contributing and citation
+## Governance and contribution
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) and include provenance for scientific changes. Cite the project using [CITATION.cff](CITATION.cff). Project ownership and attribution are documented in [AUTHORS.md](AUTHORS.md).
+AI-generated interpretations remain separate from source evidence and require review. Every imported record should retain source identifier, retrieval date, license, and transformation history. See [DATA_GOVERNANCE.md](DATA_GOVERNANCE.md), [REPRODUCIBILITY.md](REPRODUCIBILITY.md), [SECURITY.md](SECURITY.md), and [CONTRIBUTING.md](CONTRIBUTING.md).

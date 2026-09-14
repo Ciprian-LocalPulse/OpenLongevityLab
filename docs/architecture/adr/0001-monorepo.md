@@ -1,5 +1,3 @@
 # ADR 0001: modular monorepo
 
-Status: accepted
-
-OpenLongevity uses one repository for the Python scientific core, API, documentation, examples, and deployment templates. Shared schemas and tests remain close to the code while future web and Rust components can evolve independently.
+Status: accepted. One repository contains the Python scientific core, web shell, optional Rust kernels, schemas, documentation, examples, and deployment templates so changes can be reviewed together.

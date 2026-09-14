@@ -1,6 +1,1 @@
-{
-  "notice": "SYNTHETIC EXAMPLE DATA — NOT FOR SCIENTIFIC CONCLUSIONS",
-  "records": [
-    {"identifier": "SYN-ANIMAL-001", "title": "Senescence pathway in mice", "study_type": "animal", "species": "mouse", "endpoint": "healthspan", "source": "synthetic fixture", "confidence": 0.6}
-  ]
-}
+{"notice":"SYNTHETIC EXAMPLE DATA — NOT FOR SCIENTIFIC CONCLUSIONS","records":[{"identifier":"SYN-ANIMAL-001","title":"Senescence pathway in mice","study_type":"animal","species":"mouse","endpoint":"healthspan","source":"synthetic fixture","confidence":0.6}]}

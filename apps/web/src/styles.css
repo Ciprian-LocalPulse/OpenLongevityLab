@@ -1,0 +1,9 @@
+:root { color-scheme: dark; font-family: system-ui, sans-serif; background: #071521; color: #e9f4ff; }
+body { margin: 0; min-height: 100vh; background: radial-gradient(circle at 70% 15%, #164466, #071521 60%); }
+main { max-width: 900px; margin: auto; padding: 4rem 1.5rem; }
+.eyebrow { color: #72d9c7; letter-spacing: .18em; font-size: .75rem; }
+h1 { font-size: clamp(3rem, 10vw, 6rem); margin: .2rem 0; }
+.search, #result { margin-top: 2rem; padding: 1.5rem; border: 1px solid #315d79; border-radius: 1rem; background: #0b2233cc; }
+input, button { padding: .75rem; border-radius: .5rem; border: 1px solid #5385a4; margin: .5rem .5rem 0 0; }
+button { background: #53d8b4; color: #062018; cursor: pointer; }
+footer { margin-top: 3rem; opacity: .75; }

@@ -1,10 +1,9 @@
 """Biomarker category definitions and interpretation guardrails."""
-
 from dataclasses import dataclass
-from enum import Enum
+from enum import StrEnum
 
 
-class BiomarkerCategory(str, Enum):
+class BiomarkerCategory(StrEnum):
     EPIGENETIC = "epigenetic"
     PROTEOMIC = "proteomic"
     TRANSCRIPTOMIC = "transcriptomic"
@@ -26,16 +25,21 @@ class BiomarkerDefinition:
     evidence_maturity: str
 
 
-CATALOG: tuple[BiomarkerDefinition, ...] = (
+CATALOG = (
     BiomarkerDefinition(
-        "epigenetic age estimate", BiomarkerCategory.EPIGENETIC,
+        "epigenetic age estimate",
+        BiomarkerCategory.EPIGENETIC,
         "DNA methylation patterns at a defined panel of loci",
         "Population-level association with age-related phenotypes",
-        ("Clock calibration varies by tissue and cohort", "Not a definitive measure of biological age"),
+        (
+            "Clock calibration varies by tissue and cohort",
+            "Not a definitive measure of biological age",
+        ),
         "varies by clock and validation cohort",
     ),
     BiomarkerDefinition(
-        "telomere length", BiomarkerCategory.TELOMERE,
+        "telomere length",
+        BiomarkerCategory.TELOMERE,
         "Relative or absolute telomeric DNA length",
         "A component of cellular replicative history",
         ("Large inter-individual variation", "Assay and cell-type effects"),
@@ -45,6 +49,9 @@ CATALOG: tuple[BiomarkerDefinition, ...] = (
 
 
 def find(name: str) -> list[BiomarkerDefinition]:
-    """Find catalog entries by case-insensitive name or category."""
     needle = name.casefold().strip()
-    return [item for item in CATALOG if needle in item.name.casefold() or needle == item.category.value]
+    return [
+        item
+        for item in CATALOG
+        if needle in item.name.casefold() or needle == item.category.value
+    ]
