@@ -4,6 +4,8 @@ from .evidence import EvidenceEngine
 from .gaps import ResearchGapDetector
 from .graph import EvidenceGraph
 from .models import EvidenceRecord, StudyType
+
+
 try:
     from fastapi import FastAPI, Query
 except ImportError:  # pragma: no cover
@@ -68,7 +70,9 @@ def create_app():
             "gaps": [gap.__dict__ for gap in detector.detect(topic, fixture)],
         }
     @app.get("/api/v1/graph")
-    def knowledge_graph(subject: str | None = Query(default=None, max_length=120)) -> dict[str, object]:
+    def knowledge_graph(
+        subject: str | None = Query(default=None, max_length=120),
+    ) -> dict[str, object]:
         nodes = graph.neighbors(subject) if subject else graph.as_dict()
         return {"nodes": nodes}
     @app.get("/api/v1/search")

@@ -1,6 +1,8 @@
 """Interfaces for licensed scientific source adapters."""
 from dataclasses import dataclass
 from typing import Protocol
+
+
 @dataclass(frozen=True)
 class SourceDocument:
     identifier: str
