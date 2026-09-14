@@ -6,4 +6,10 @@ h1 { font-size: clamp(3rem, 10vw, 6rem); margin: .2rem 0; }
 .search, #result { margin-top: 2rem; padding: 1.5rem; border: 1px solid #315d79; border-radius: 1rem; background: #0b2233cc; }
 input, button { padding: .75rem; border-radius: .5rem; border: 1px solid #5385a4; margin: .5rem .5rem 0 0; }
 button { background: #53d8b4; color: #062018; cursor: pointer; }
-footer { margin-top: 3rem; opacity: .75; }
+footer { margin-top: 3rem; opacity: .9; }
+.site-footer { display: grid; grid-template-columns: 1.2fr 1.4fr 1fr; gap: 1rem; max-width: 1100px; margin: 4rem auto 0; padding: 2rem 1.5rem; border-top: 1px solid #315d79; color: #b9d3e5; }
+.site-footer div { display: flex; flex-direction: column; gap: .35rem; }
+.site-footer strong { color: #e9f4ff; letter-spacing: .04em; }
+.site-footer span, .site-footer small { color: #86a9bf; font-size: .85rem; }
+.site-footer a { color: #72d9c7; text-decoration: none; margin-right: .7rem; }
+@media (max-width: 700px) { .site-footer { grid-template-columns: 1fr; } }

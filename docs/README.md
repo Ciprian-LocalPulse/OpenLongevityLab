@@ -6,3 +6,4 @@
 - `research/Research-Gap-Detector.md` — prioritization heuristics.
 - `security/THREAT_MODEL.md` — threats and mitigations.
 - `architecture/adr/` — decisions that affect long-term design.
+- `academic/` — eleven academic technical notes with Mermaid figures, methods, and reproducibility checks.

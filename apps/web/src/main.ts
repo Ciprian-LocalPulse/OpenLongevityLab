@@ -9,7 +9,7 @@ app.innerHTML = `
   <p>Evidence mapping for biological aging research.</p><nav aria-label="Primary"><button data-view="evidence">Evidence</button><button data-view="graph">Knowledge graph</button><button data-view="sources">Sources</button></nav></header>
   <main><section class="search"><label for="topic">Explore a topic</label><div><input id="topic" value="cellular senescence" maxlength="120"><button id="run">Inspect evidence</button></div><p class="status" id="status">API status: checking…</p></section>
   <section id="result" aria-live="polite"><p>Results retain provenance and distinguish study designs.</p></section></main>
-  <footer>Research use only. Not medical advice. <a href="https://github.com/Ciprian-LocalPulse/OpenLongevityLab">Open source on GitHub</a>.</footer>`;
+  <footer class="site-footer"><div><strong>OpenLongevity</strong><span>Open science for a healthier tomorrow</span></div><div><strong>Ciprian Ștefan Pleșca</strong><span>Founder · Principal Author · Lead Maintainer</span></div><div><a href="https://github.com/Ciprian-LocalPulse/OpenLongevityLab">GitHub</a><a href="/WHITEPAPER.md">Whitepaper</a><a href="/ACADEMIC_MANIFESTO.md">Academic manifesto</a></div><small>Research use only · Not medical advice · v0.2.0</small></footer>`;
 
 const result = document.querySelector<HTMLDivElement>("#result");
 document.querySelector<HTMLButtonElement>("#run")?.addEventListener("click", async () => {
@@ -21,7 +21,7 @@ document.querySelector<HTMLButtonElement>("#run")?.addEventListener("click", asy
     if (!response.ok) throw new Error("API request failed");
     const payload = (await response.json()) as { summary: EvidenceSummary };
     result.innerHTML = `<h2>Evidence summary</h2><p>${payload.summary.active_records} active record(s), mean confidence ${payload.summary.mean_confidence}; navigation score ${payload.summary.mean_navigation_score ?? "n/a"}</p><small>${payload.summary.disclaimer}</small>`;
-    const search = await fetch(`/api/v1/search?q=${encodeURIComponent(topic)}&limit=10`);
+    const search = await fetch(`/api/v1/search?query=${encodeURIComponent(topic)}&limit=10`);
     if (search.ok) {
       const data = (await search.json()) as SearchPayload;
       result.innerHTML += `<h3>Mapped resources (${data.total})</h3><ul>${data.items.map((item) => `<li><strong>${String(item.title ?? item.name ?? item.id)}</strong> <span class="badge">${String(item.type ?? item.kind ?? "resource")}</span></li>`).join("")}</ul>`;
