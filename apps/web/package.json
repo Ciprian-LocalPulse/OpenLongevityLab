@@ -1,1 +1,1 @@
-{"name":"openlongevity-web","version":"0.2.0","private":true,"description":"Provenance-first aging research dashboard","author":"Ciprian Ștefan Pleșca","type":"module","scripts":{"build":"tsc --noEmit","lint":"tsc --noEmit","test":"tsc --noEmit"},"devDependencies":{"typescript":"^5.5.0"}}
+{"name":"openlongevity-web","version":"0.2.0","private":true,"description":"Provenance-first aging research dashboard","author":"Ciprian Ștefan Pleșca","type":"module","scripts":{"build":"tsc --noEmit","lint":"tsc --noEmit","test":"tsc --noEmit"},"devDependencies":{"typescript":"^7.0.2"}}
