@@ -1,4 +1,5 @@
 """Command-line entry point."""
+
 import argparse
 
 from .evidence import EvidenceEngine

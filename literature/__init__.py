@@ -1,4 +1,5 @@
 """Interfaces for licensed scientific source adapters."""
+
 from dataclasses import dataclass
 from typing import Protocol
 
@@ -11,9 +12,14 @@ class SourceDocument:
     source: str
     license: str | None = None
     retrieved_at: str | None = None
+
+
 class LiteratureAdapter(Protocol):
     source_name: str
+
     def search(self, query: str, *, limit: int = 20) -> list[SourceDocument]: ...
+
+
 def validate_query(query: str, *, max_length: int = 200) -> str:
     normalized = " ".join(query.split())
     if not normalized:
