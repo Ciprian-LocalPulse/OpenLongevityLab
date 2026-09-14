@@ -2,6 +2,8 @@
 
 Open-source computational infrastructure for understanding, measuring, mapping, and modeling biological aging.
 
+![OpenLongevity — open science for a healthier tomorrow](assets/OPENLONGEVITY.png)
+
 [![CI](https://github.com/example/openlongevity/actions/workflows/ci.yml/badge.svg)](https://github.com/example/openlongevity/actions)
 [![Python](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache--2.0-green)](LICENSE)
