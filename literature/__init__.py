@@ -13,7 +13,9 @@ class LiteratureAdapter(Protocol):
     source_name: str
     def search(self, query: str, *, limit: int = 20) -> list[SourceDocument]: ...
 def validate_query(query: str, *, max_length: int = 200) -> str:
-    normalized=" ".join(query.split())
-    if not normalized: raise ValueError("query must not be empty")
-    if len(normalized)>max_length: raise ValueError(f"query must not exceed {max_length} characters")
+    normalized = " ".join(query.split())
+    if not normalized:
+        raise ValueError("query must not be empty")
+    if len(normalized) > max_length:
+        raise ValueError(f"query must not exceed {max_length} characters")
     return normalized

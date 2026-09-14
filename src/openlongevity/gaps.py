@@ -1,7 +1,9 @@
 """Research-gap detection based on transparent heuristics."""
-from typing import Iterable
+from collections.abc import Iterable
+
 from .evidence import EvidenceEngine
 from .models import EvidenceRecord, ResearchGap, StudyType
+
 
 class ResearchGapDetector:
     def __init__(self, engine: EvidenceEngine | None = None) -> None:
@@ -10,16 +12,48 @@ class ResearchGapDetector:
     def detect(self, topic: str, records: Iterable[EvidenceRecord]) -> list[ResearchGap]:
         selected = tuple(r for r in records if topic.casefold() in self._search_text(r))
         if not selected:
-            return [ResearchGap(topic, "no_indexed_evidence", "No matching records were indexed.", "high", ())]
+            return [
+                ResearchGap(
+                    topic,
+                    "no_indexed_evidence",
+                    "No matching records were indexed.",
+                    "high",
+                    (),
+                )
+            ]
         ids = tuple(r.identifier for r in selected)
         types = {r.study_type for r in selected}
         gaps: list[ResearchGap] = []
         if StudyType.ANIMAL in types and not ({StudyType.CLINICAL, StudyType.RCT} & types):
-            gaps.append(ResearchGap(topic, "translational_gap", "Animal evidence is present without indexed human clinical evidence.", "high", ids))
+            gaps.append(
+                ResearchGap(
+                    topic,
+                    "translational_gap",
+                    "Animal evidence is present without indexed human clinical evidence.",
+                    "high",
+                    ids,
+                )
+            )
         if all(r.replication_status in {"unknown", "unreplicated"} for r in selected):
-            gaps.append(ResearchGap(topic, "replication_gap", "Replication status is unknown or unreplicated across matching records.", "medium", ids))
+            gaps.append(
+                ResearchGap(
+                    topic,
+                    "replication_gap",
+                    "Replication status is unknown or unreplicated across matching records.",
+                    "medium",
+                    ids,
+                )
+            )
         if len({r.source for r in selected}) == 1 and len(selected) > 1:
-            gaps.append(ResearchGap(topic, "concentration", "Evidence is concentrated in one source, limiting corroboration.", "medium", ids))
+            gaps.append(
+                ResearchGap(
+                    topic,
+                    "concentration",
+                    "Evidence is concentrated in one source, limiting corroboration.",
+                    "medium",
+                    ids,
+                )
+            )
         return gaps
 
     @staticmethod

@@ -1,9 +1,10 @@
 """Typed domain models used by the evidence engine and API."""
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 from typing import Any
 
-class StudyType(str, Enum):
+
+class StudyType(StrEnum):
     SYSTEMATIC_REVIEW = "systematic_review"
     RCT = "randomized_controlled_trial"
     CLINICAL = "clinical"
@@ -12,12 +13,14 @@ class StudyType(str, Enum):
     IN_VITRO = "in_vitro"
     COMPUTATIONAL = "computational"
 
-class RetractionStatus(str, Enum):
+
+class RetractionStatus(StrEnum):
     ACTIVE = "active"
     CORRECTED = "corrected"
     EXPRESSION_OF_CONCERN = "expression_of_concern"
     RETRACTED = "retracted"
     UNKNOWN = "unknown"
+
 
 @dataclass(frozen=True)
 class EvidenceRecord:
@@ -37,12 +40,17 @@ class EvidenceRecord:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        if not self.identifier.strip() or not self.title.strip() or not self.source.strip():
+        if (
+            not self.identifier.strip()
+            or not self.title.strip()
+            or not self.source.strip()
+        ):
             raise ValueError("identifier, title, and source must not be empty")
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError("confidence must be between 0 and 1")
         if self.sample_size is not None and self.sample_size < 0:
             raise ValueError("sample_size cannot be negative")
+
 
 @dataclass(frozen=True)
 class ResearchGap:

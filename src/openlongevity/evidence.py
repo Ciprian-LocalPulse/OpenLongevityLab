@@ -1,10 +1,12 @@
 """Transparent evidence grading rules."""
 from collections import Counter
-from enum import Enum
-from typing import Iterable
+from collections.abc import Iterable
+from enum import StrEnum
+
 from .models import EvidenceRecord, RetractionStatus, StudyType
 
-class EvidenceLevel(str, Enum):
+
+class EvidenceLevel(StrEnum):
     A = "A"
     B = "B"
     C = "C"
@@ -13,12 +15,17 @@ class EvidenceLevel(str, Enum):
     F = "F"
     G = "G"
 
+
 _LEVEL_BY_TYPE = {
-    StudyType.SYSTEMATIC_REVIEW: EvidenceLevel.A, StudyType.RCT: EvidenceLevel.B,
-    StudyType.CLINICAL: EvidenceLevel.C, StudyType.OBSERVATIONAL: EvidenceLevel.D,
-    StudyType.ANIMAL: EvidenceLevel.E, StudyType.IN_VITRO: EvidenceLevel.F,
+    StudyType.SYSTEMATIC_REVIEW: EvidenceLevel.A,
+    StudyType.RCT: EvidenceLevel.B,
+    StudyType.CLINICAL: EvidenceLevel.C,
+    StudyType.OBSERVATIONAL: EvidenceLevel.D,
+    StudyType.ANIMAL: EvidenceLevel.E,
+    StudyType.IN_VITRO: EvidenceLevel.F,
     StudyType.COMPUTATIONAL: EvidenceLevel.G,
 }
+
 
 class EvidenceEngine:
     """Grade and summarize records without implying clinical effectiveness."""
