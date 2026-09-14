@@ -1,4 +1,5 @@
 """Research-gap detection based on transparent heuristics."""
+
 from collections.abc import Iterable
 
 from .evidence import EvidenceEngine
@@ -32,6 +33,18 @@ class ResearchGapDetector:
                     "Animal evidence is present without indexed human clinical evidence.",
                     "high",
                     ids,
+                    0.81,
+                )
+            )
+        if StudyType.IN_VITRO in types and StudyType.ANIMAL not in types:
+            gaps.append(
+                ResearchGap(
+                    topic,
+                    "validation_gap",
+                    "In-vitro evidence is present without indexed animal validation.",
+                    "high",
+                    ids,
+                    0.78,
                 )
             )
         if all(r.replication_status in {"unknown", "unreplicated"} for r in selected):
@@ -42,6 +55,7 @@ class ResearchGapDetector:
                     "Replication status is unknown or unreplicated across matching records.",
                     "medium",
                     ids,
+                    0.72,
                 )
             )
         if len({r.source for r in selected}) == 1 and len(selected) > 1:
@@ -52,6 +66,33 @@ class ResearchGapDetector:
                     "Evidence is concentrated in one source, limiting corroboration.",
                     "medium",
                     ids,
+                    0.68,
+                )
+            )
+        small = tuple(
+            r.identifier for r in selected if r.sample_size is not None and r.sample_size < 50
+        )
+        if small:
+            gaps.append(
+                ResearchGap(
+                    topic,
+                    "small_sample",
+                    "At least one matching record reports a small sample (<50).",
+                    "medium",
+                    small,
+                    0.70,
+                )
+            )
+        outdated = tuple(r.identifier for r in selected if r.metadata.get("outdated") is True)
+        if outdated:
+            gaps.append(
+                ResearchGap(
+                    topic,
+                    "outdated_evidence",
+                    "Matching records were marked outdated by the source refresh policy.",
+                    "low",
+                    outdated,
+                    0.65,
                 )
             )
         return gaps

@@ -1,0 +1,14 @@
+name: Docker
+on:
+  push:
+    branches: [main, principal]
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose config
+      - run: docker build --file Dockerfile --tag openlongevity:${{ github.sha }} .

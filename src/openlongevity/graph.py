@@ -1,4 +1,5 @@
 """Small in-memory graph abstraction."""
+
 from collections import defaultdict
 
 

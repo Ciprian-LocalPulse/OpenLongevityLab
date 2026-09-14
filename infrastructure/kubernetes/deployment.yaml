@@ -9,6 +9,6 @@ spec:
     spec:
       containers:
         - name: api
-          image: openlongevity:0.1.0
+          image: openlongevity:0.2.0
           ports: [{containerPort: 8000}]
           envFrom: [{configMapRef: {name: openlongevity-config}}]
