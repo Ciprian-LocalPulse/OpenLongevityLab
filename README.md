@@ -46,6 +46,10 @@ uvicorn 'openlongevity.api:create_app' --factory --reload
 
 Synthetic records are software fixtures only and are not scientific conclusions. See [limitations](docs/research/LIMITATIONS.md), [data sources](docs/data/DATA_SOURCES.md), and the [v0.2.0 release notes](docs/releases/v0.2.0.md).
 
+## Scientific specification
+
+The [whitepaper](WHITEPAPER.md) defines the data model, provider contract, scoring equations, validation protocol, trust boundaries, and research roadmap. The [academic manifesto](ACADEMIC_MANIFESTO.md) states the review and ethics commitments behind the implementation.
+
 ## Repository structure
 
 ```text
