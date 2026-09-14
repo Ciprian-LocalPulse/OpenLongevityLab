@@ -1,9 +1,7 @@
 """Typed domain models used by the evidence engine and API."""
-
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
-
 
 class StudyType(str, Enum):
     SYSTEMATIC_REVIEW = "systematic_review"
@@ -14,7 +12,6 @@ class StudyType(str, Enum):
     IN_VITRO = "in_vitro"
     COMPUTATIONAL = "computational"
 
-
 class RetractionStatus(str, Enum):
     ACTIVE = "active"
     CORRECTED = "corrected"
@@ -22,15 +19,8 @@ class RetractionStatus(str, Enum):
     RETRACTED = "retracted"
     UNKNOWN = "unknown"
 
-
 @dataclass(frozen=True)
 class EvidenceRecord:
-    """A provenance-preserving observation from a scientific source.
-
-    This record describes what a source reported; it deliberately does not
-    represent clinical advice or an inferred treatment recommendation.
-    """
-
     identifier: str
     title: str
     study_type: StudyType
@@ -47,20 +37,15 @@ class EvidenceRecord:
     metadata: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
-        if not self.identifier.strip():
-            raise ValueError("identifier must not be empty")
-        if not self.title.strip() or not self.source.strip():
-            raise ValueError("title and source must not be empty")
+        if not self.identifier.strip() or not self.title.strip() or not self.source.strip():
+            raise ValueError("identifier, title, and source must not be empty")
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError("confidence must be between 0 and 1")
         if self.sample_size is not None and self.sample_size < 0:
             raise ValueError("sample_size cannot be negative")
 
-
 @dataclass(frozen=True)
 class ResearchGap:
-    """A prioritization signal derived from the distribution of evidence."""
-
     topic: str
     kind: str
     rationale: str

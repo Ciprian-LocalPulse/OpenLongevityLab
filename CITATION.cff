@@ -7,7 +7,6 @@ authors:
   - family-names: Pleșca
     given-names: Ciprian Ștefan
     affiliation: Independent project creator
-    email: ""
 repository-code: https://github.com/example/openlongevity
 license: Apache-2.0
 abstract: Open-source computational infrastructure for aging and longevity research.

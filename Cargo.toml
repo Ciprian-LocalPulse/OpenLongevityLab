@@ -1,0 +1,3 @@
+[workspace]
+members = ["packages/rust/evidence-core"]
+resolver = "2"

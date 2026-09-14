@@ -3,9 +3,7 @@ name = "openlongevity-evidence-core"
 version = "0.1.0"
 edition = "2021"
 authors = ["Ciprian Ștefan Pleșca"]
-description = "Small safe Rust kernels for OpenLongevity evidence aggregation"
 license = "Apache-2.0"
-
 [lib]
 name = "openlongevity_evidence_core"
 path = "src/lib.rs"

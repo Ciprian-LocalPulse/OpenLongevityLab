@@ -1,0 +1,13 @@
+name: Bug report
+description: Report a reproducible software problem.
+title: "bug: "
+labels: [bug]
+body:
+  - type: textarea
+    id: steps
+    attributes: {label: Steps to reproduce, description: Include the smallest reproducible example.}
+    validations: {required: true}
+  - type: textarea
+    id: expected
+    attributes: {label: Expected and actual behavior}
+    validations: {required: true}

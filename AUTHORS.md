@@ -10,5 +10,3 @@
 - Principal Author
 
 OpenLongevity — Open-source computational infrastructure for aging and longevity research.
-
-The photograph is provided by the author for project attribution.

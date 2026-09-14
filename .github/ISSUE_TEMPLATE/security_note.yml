@@ -1,0 +1,6 @@
+name: Security report
+description: Redirect to private disclosure guidance.
+body:
+  - type: markdown
+    attributes:
+      value: "Please do not disclose vulnerabilities publicly. Follow SECURITY.md for private reporting."

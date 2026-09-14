@@ -1,0 +1,13 @@
+name: Research evidence proposal
+description: Propose a sourced evidence record.
+title: "evidence: "
+labels: [research]
+body:
+  - type: input
+    id: source
+    attributes: {label: Source identifier, placeholder: DOI, PMID, or registry ID}
+    validations: {required: true}
+  - type: textarea
+    id: provenance
+    attributes: {label: Provenance and limitations}
+    validations: {required: true}

@@ -1,0 +1,8 @@
+{
+  "name": "openlongevity",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open-source computational infrastructure for aging research",
+  "author": "Ciprian Ștefan Pleșca",
+  "scripts": {"web:build": "npm --prefix apps/web run build", "web:test": "npm --prefix apps/web run test"}
+}

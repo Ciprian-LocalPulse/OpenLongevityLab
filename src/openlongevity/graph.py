@@ -1,8 +1,5 @@
-"""Small in-memory graph abstraction suitable for demos and API fixtures."""
-
+"""Small in-memory graph abstraction."""
 from collections import defaultdict
-
-
 class EvidenceGraph:
     def __init__(self) -> None:
         self._edges: dict[str, set[tuple[str, str]]] = defaultdict(set)
