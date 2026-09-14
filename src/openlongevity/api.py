@@ -5,7 +5,6 @@ from .gaps import ResearchGapDetector
 from .graph import EvidenceGraph
 from .models import EvidenceRecord, StudyType
 
-
 try:
     from fastapi import FastAPI, Query
 except ImportError:  # pragma: no cover
