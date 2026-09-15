@@ -204,7 +204,13 @@ def create_app(
 
     @app.get("/api/v1/evidence/{identifier}")
     def evidence_record(identifier: str) -> dict[str, Any]:
-        for record in evidence()["items"]:
+        # FIX: call evidence() with an explicit topic="" instead of relying on the
+        # default value. The default is a fastapi.Query(...) sentinel object, which
+        # only gets resolved to a real string during an actual HTTP request. Calling
+        # evidence() directly as a plain Python function (as we do here) left `topic`
+        # as that Query object, causing: AttributeError: 'Query' object has no
+        # attribute 'casefold'.
+        for record in evidence(topic="")["items"]:
             if record["identifier"] == identifier:
                 return {"item": record, "mode": "fixture-only", "disclaimer": DISCLAIMER}
         raise HTTPException(404, {"code": "NOT_FOUND", "message": "Evidence fixture not found"})
@@ -225,4 +231,3 @@ def create_app(
         raise HTTPException(404, {"code": "RESOURCE_UNAVAILABLE",
                                   "message": "This resource is not implemented in this preview"})
     return app
-
