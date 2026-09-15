@@ -1,4 +1,6 @@
 """Publication persistence with an immutable revision history."""
+from __future__ import annotations
+
 import hashlib
 import json
 from dataclasses import asdict
