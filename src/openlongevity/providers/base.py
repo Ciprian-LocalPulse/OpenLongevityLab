@@ -56,6 +56,8 @@ class Publication:
     mesh_terms: tuple[str, ...] = ()
     citation_count: int | None = None
     provenance: Provenance | None = None
+    retraction_status: str = "unknown"
+    corrections: tuple[dict[str, str], ...] = ()
 
 
 @dataclass(frozen=True)
