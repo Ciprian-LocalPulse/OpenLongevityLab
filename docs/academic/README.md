@@ -25,9 +25,19 @@ This collection turns the platform specification into reviewable research notes.
 | A19 | [Access control and role model](19-access-control-role-model.md) | reader/annotator/curator separation |
 | A20 | [Intervention comparability](20-intervention-comparability.md) | PICO-based trial comparability scoring |
 | A21 | [Versioned release and rollback](21-versioned-release-rollback.md) | immutable, tagged evidence releases |
+| A22 | [API contract and provenance envelope](22-api-contract-provenance-envelope.md) | enforced source traceability at the API boundary |
+| A23 | [Persistence architecture](23-persistence-architecture.md) | PostgreSQL as system of record, SQLite for tests |
+| A24 | [Monorepo governance](24-monorepo-governance.md) | atomic cross-language review vs. polyrepo cost |
+| A25 | [Threat model and adversarial input](25-threat-model-adversarial-input.md) | untrusted text, prompt injection, dependency risk |
+| A26 | [Data source catalog and licensing](26-data-source-catalog-licensing.md) | read-only boundary across five registries |
+| A27 | [Documented limitations as epistemic boundary](27-documented-limitations-epistemic-boundary.md) | falsifiable, checkable scope statements |
+| A28 | [Independent audit methodology](28-independent-audit-methodology.md) | forensic verification of maturity claims |
+| A29 | [Human review boundary for machine extraction](29-human-review-boundary-machine-extraction.md) | verification as an irreducibly human action |
+| A30 | [Worked example as reproducible protocol](30-worked-example-fixture-boundary.md) | tutorial discipline and the fixture/observation boundary |
+| A31 | [Release notes as scientific changelog](31-release-notes-scientific-changelog.md) | capability claims paired with documented limits |
 
 ---
 
-**Author (A12–A21 extension).** Ciprian Ștefan Pleșca — independent Romanian researcher.
+**Author (A12–A31 extension).** Ciprian Ștefan Pleșca — independent Romanian researcher.
 
 **License.** Licensed under the Apache License, Version 2.0. You may not use this file except in compliance with the License. You may obtain a copy at http://www.apache.org/licenses/LICENSE-2.0. Distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
