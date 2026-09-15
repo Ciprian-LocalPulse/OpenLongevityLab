@@ -1,203 +1,236 @@
-"""Optional FastAPI application exposing research primitives."""
-
+"""Versioned publication API. Demo science is explicitly separated from persisted metadata."""
+import secrets
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from dataclasses import asdict
 from os import getenv
+from typing import Any, Literal
+
+from fastapi import FastAPI, Header, HTTPException, Query, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from pydantic import BaseModel, ConfigDict, Field
+from sqlalchemy.exc import SQLAlchemyError
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from . import __version__
+from .constants import DISCLAIMER
+from .db import Database
 from .evidence import EvidenceEngine
 from .gaps import ResearchGapDetector
-from .graph import EvidenceGraph
 from .models import EvidenceRecord, StudyType
-from .providers import ClinicalTrialsProvider, PubMedProvider, SearchQuery
-from .providers.base import ProviderError
-
-try:
-    from fastapi import FastAPI, Query
-except ImportError:  # pragma: no cover
-    FastAPI = None  # type: ignore[assignment,misc]
+from .providers import PubMedProvider, SearchQuery
+from .providers.base import ProviderError, Publication
 
 
-def create_app():
-    if FastAPI is None:
-        raise RuntimeError("Install openlongevity[api] to run the HTTP service")
-    app = FastAPI(title="OpenLongevity API", version=__version__)
-    engine = EvidenceEngine()
-    detector = ResearchGapDetector(engine)
-    graph = EvidenceGraph()
-    graph.add_edge("TP53", "associated_with", "cellular senescence")
-    fixture = [
-        EvidenceRecord(
-            "SYN-001",
-            "Cellular senescence pathway study",
-            StudyType.IN_VITRO,
-            "human cells",
-            "senescence markers",
-            "synthetic fixture",
-            confidence=0.55,
-            tags=("cellular senescence",),
-        ),
-        EvidenceRecord(
-            "SYN-002",
-            "Senescence intervention in mice",
-            StudyType.ANIMAL,
-            "mouse",
-            "healthspan",
-            "synthetic fixture",
-            confidence=0.60,
-            replication_status="unreplicated",
-            tags=("cellular senescence",),
-        ),
-    ]
+class ProvenanceResponse(BaseModel):
+    source_provider: str
+    source_identifier: str
+    source_url: str
+    retrieved_at: str
+    source_updated_at: str | None = None
+    license: str | None = None
+    checksum: str
+    normalization_version: str
+    parser_version: str
 
-    catalogs: dict[str, list[dict[str, object]]] = {
-        "genes": [{"id": "TP53", "symbol": "TP53", "description": "Synthetic graph fixture"}],
-        "proteins": [],
-        "pathways": [{"id": "senescence-pathway", "name": "Cellular senescence"}],
-        "biomarkers": [{"id": "crp", "name": "C-reactive protein", "category": "inflammatory"}],
-        "interventions": [],
-        "publications": [],
-        "trials": [],
-        "hallmarks": [{"id": "cellular-senescence", "name": "Cellular senescence"}],
-        "datasets": [],
-    }
 
-    def _collection(name: str, item_id: str | None = None) -> dict[str, object]:
-        items = catalogs[name]
-        if item_id is not None:
-            items = [item for item in items if item.get("id") == item_id]
-        return {"items": items, "total": len(items), "page": 1, "page_size": 100}
+class PublicationResponse(BaseModel):
+    identifier: str
+    title: str
+    abstract: str = ""
+    authors: list[str] = Field(default_factory=list)
+    journal: str | None = None
+    publication_date: str | None = None
+    doi: str | None = None
+    publication_types: list[str] = Field(default_factory=list)
+    mesh_terms: list[str] = Field(default_factory=list)
+    citation_count: int | None = None
+    provenance: ProvenanceResponse
+    retraction_status: str = "unknown"
+    corrections: list[dict[str, str]] = Field(default_factory=list)
+    revision: int
+    synthetic: Literal[False] = False
+    first_retrieved_at: str
+    last_retrieved_at: str
+
+
+class PublicationPage(BaseModel):
+    items: list[PublicationResponse]
+    total: int
+    page: int
+    page_size: int
+    mode: Literal["persisted"] = "persisted"
+    disclaimer: str = DISCLAIMER
+
+
+class IngestionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    query: str = Field(min_length=1, max_length=200)
+    limit: int = Field(default=5, ge=1, le=25)
+
+
+class RevisionResponse(BaseModel):
+    revision: int
+    payload: Publication
+    content_hash: str
+    retrieved_at: str
+
+
+def create_app(
+    database_url: str | None = None, provider: PubMedProvider | None = None,
+    ingestion_key: str | None = None,
+) -> FastAPI:
+    from .repository import PublicationRepository
+
+    database_url = database_url or getenv("DATABASE_URL")
+    database = Database(database_url) if database_url else None
+    repository = PublicationRepository(database) if database else None
+    source = provider or PubMedProvider()
+    key = ingestion_key if ingestion_key is not None else getenv("OPENLONGEVITY_INGESTION_KEY")
+
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        yield
+        if database:
+            await database.close()
+
+    app = FastAPI(title="OpenLongevity API", version=__version__, lifespan=lifespan,
+                  description=DISCLAIMER)
+    origins = [o.strip() for o in getenv("OPENLONGEVITY_WEB_ORIGINS", "").split(",") if o.strip()]
+    if origins:
+        app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["GET"],
+                           allow_headers=["Accept"], allow_credentials=False)
+
+    @app.exception_handler(StarletteHTTPException)
+    async def http_error(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+        detail = exc.detail if isinstance(exc.detail, dict) else {
+            "code": "HTTP_ERROR", "message": str(exc.detail)
+        }
+        return JSONResponse({"error": detail}, status_code=exc.status_code)
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
+        return JSONResponse({"error": {"code": "INVALID_REQUEST",
+                                      "message": "Request does not satisfy the API schema"}},
+                            status_code=422)
+
+    @app.exception_handler(SQLAlchemyError)
+    async def database_error(request: Request, exc: SQLAlchemyError) -> JSONResponse:
+        return JSONResponse({"error": {"code": "DATABASE_UNAVAILABLE",
+                                      "message": "Publication storage is unavailable"}},
+                            status_code=503)
+
+    def require_repository() -> PublicationRepository:
+        if repository is None:
+            raise HTTPException(503, {"code": "DATABASE_NOT_CONFIGURED",
+                                      "message": "Configure and migrate PostgreSQL first"})
+        return repository
 
     @app.get("/api/v1/health")
-    def health() -> dict[str, object]:
-        return {
-            "status": "ok",
-            "version": __version__,
-            "database": "not_configured",
-            "providers": {"pubmed": "available", "clinicaltrials": "available"},
-        }
-
-    @app.get("/api/v1/health/database")
-    async def database_health() -> dict[str, str]:
-        url = getenv("DATABASE_URL")
-        if not url:
-            return {"status": "not_configured"}
-        try:
-            from .db import Database
-
-            database = Database(url)
-            status = await database.health()
-            await database.close()
-            return {"status": status}
-        except (RuntimeError, ValueError):
-            return {"status": "unavailable"}
+    async def health() -> dict[str, str]:
+        return {"status": "ok", "version": __version__,
+                "database": await database.health() if database else "not_configured",
+                "provider_status": "not_probed", "disclaimer": DISCLAIMER}
 
     @app.get("/api/v1/version")
     def version() -> dict[str, str]:
         return {"version": __version__}
 
+    @app.get("/api/v1/health/database")
+    async def database_health() -> dict[str, str]:
+        return {"status": await database.health() if database else "not_configured"}
+
+    @app.post("/api/v1/ingestion/pubmed", response_model=PublicationPage)
+    async def ingest_pubmed(
+        body: IngestionRequest, x_ingestion_key: str | None = Header(default=None)
+    ) -> PublicationPage:
+        if not key:
+            raise HTTPException(503, {"code": "INGESTION_DISABLED",
+                                      "message": "Server-side ingestion key is not configured"})
+        if not x_ingestion_key or not secrets.compare_digest(x_ingestion_key, key):
+            raise HTTPException(401, {"code": "UNAUTHORIZED",
+                                      "message": "An operator ingestion key is required"})
+        repo = require_repository()
+        try:
+            records = await source.search(SearchQuery(body.query, limit=body.limit))
+        except ValueError as exc:
+            raise HTTPException(422, {"code": "INVALID_QUERY", "message": str(exc)}) from exc
+        except ProviderError as exc:
+            raise HTTPException(502, {"code": "PROVIDER_UNAVAILABLE",
+                                      "message": "PubMed is unavailable; retry later"}) from exc
+        items = [PublicationResponse.model_validate(await repo.save(record)) for record in records]
+        return PublicationPage(items=items, total=len(items), page=1, page_size=body.limit)
+
+    @app.get("/api/v1/publications", response_model=PublicationPage)
+    @app.get("/api/v1/search", response_model=PublicationPage)
+    async def publications(
+        query: str = Query(default="", max_length=200),
+        page: int = Query(default=1, ge=1, le=10000),
+        page_size: int = Query(default=20, ge=1, le=100),
+    ) -> PublicationPage:
+        items, total = await require_repository().list(query.strip(), page, page_size)
+        return PublicationPage(items=[PublicationResponse.model_validate(item) for item in items],
+                               total=total, page=page, page_size=page_size)
+
+    @app.get("/api/v1/publications/{identifier}", response_model=PublicationResponse)
+    async def publication(identifier: str) -> PublicationResponse:
+        if len(identifier) > 160:
+            raise HTTPException(
+                422, {"code": "INVALID_IDENTIFIER", "message": "Identifier too long"}
+            )
+        item = await require_repository().get(identifier)
+        if item is None:
+            raise HTTPException(404, {"code": "NOT_FOUND", "message": "Publication not found"})
+        return PublicationResponse.model_validate(item)
+
+    @app.get("/api/v1/publications/{identifier}/history", response_model=list[RevisionResponse])
+    async def history(identifier: str) -> list[RevisionResponse]:
+        await publication(identifier)
+        return [RevisionResponse.model_validate(row)
+                for row in await require_repository().history(identifier)]
+
+    engine = EvidenceEngine()
+    fixtures = [EvidenceRecord(
+        "SYN-001", "Synthetic senescence example", StudyType.IN_VITRO, "synthetic cells",
+        "illustrative marker", "synthetic fixture", confidence=0.55, tags=("senescence",)
+    )]
+
     @app.get("/api/v1/evidence")
-    def evidence(topic: str | None = Query(default=None, max_length=120)) -> dict[str, object]:
-        records = [
-            r
-            for r in fixture
-            if topic is None
-            or topic.casefold() in r.title.casefold()
-            or any(topic.casefold() in t.casefold() for t in r.tags)
-        ]
-        return {
-            "items": [
-                {"id": r.identifier, "title": r.title, "level": engine.grade(r).value}
-                for r in records
-            ],
-            "summary": engine.summarize(records),
-        }
+    def evidence(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
+        records = [r for r in fixtures if topic.casefold() in r.title.casefold()]
+        return {"items": [{**asdict(r), "synthetic": True, "level": engine.grade(r).value}
+                          for r in records], "mode": "fixture-only",
+                "summary": engine.summarize(records), "disclaimer": DISCLAIMER}
+
+    @app.get("/api/v1/evidence/{identifier}")
+    def evidence_record(identifier: str) -> dict[str, Any]:
+        # FIX: call evidence() with an explicit topic="" instead of relying on the
+        # default value. The default is a fastapi.Query(...) sentinel object, which
+        # only gets resolved to a real string during an actual HTTP request. Calling
+        # evidence() directly as a plain Python function (as we do here) left `topic`
+        # as that Query object, causing: AttributeError: 'Query' object has no
+        # attribute 'casefold'.
+        for record in evidence(topic="")["items"]:
+            if record["identifier"] == identifier:
+                return {"item": record, "mode": "fixture-only", "disclaimer": DISCLAIMER}
+        raise HTTPException(404, {"code": "NOT_FOUND", "message": "Evidence fixture not found"})
 
     @app.get("/api/v1/research-gaps")
-    def research_gaps(topic: str = Query(min_length=1, max_length=120)) -> dict[str, object]:
-        return {
-            "topic": topic,
-            "gaps": [gap.__dict__ for gap in detector.detect(topic, fixture)],
-        }
+    def gaps(topic: str = Query(min_length=1, max_length=120)) -> dict[str, Any]:
+        gaps_found = ResearchGapDetector(engine).detect(topic, fixtures)
+        return {"mode": "fixture-only", "disclaimer": DISCLAIMER,
+                "items": [asdict(gap) for gap in gaps_found]}
 
     @app.get("/api/v1/graph")
-    def knowledge_graph(
-        subject: str | None = Query(default=None, max_length=120),
-    ) -> dict[str, object]:
-        payload = graph.neighbors(subject) if subject else graph.as_dict()
-        return payload
+    def graph() -> dict[str, Any]:
+        return {"mode": "fixture-only", "nodes": ["illustrative gene", "illustrative pathway"],
+                "edges": [{"source": "illustrative gene", "target": "illustrative pathway",
+                           "relation": "synthetic association"}], "disclaimer": DISCLAIMER}
 
-    @app.get("/api/v1/search")
-    def search(
-        query: str = Query(min_length=1, max_length=120),
-        limit: int = Query(default=25, ge=1, le=100),
-    ) -> dict[str, object]:
-        q = query.casefold()
-        items = [
-            {
-                "id": r.identifier,
-                "title": r.title,
-                "type": "evidence",
-                "level": engine.grade(r).value,
-            }
-            for r in fixture
-            if q in r.title.casefold() or any(q in t.casefold() for t in r.tags)
-        ][:limit]
-        return {"query": query, "items": items, "total": len(items), "page": 1, "page_size": limit}
-
-    for resource in catalogs:
-        app.add_api_route(
-            f"/api/v1/{resource}",
-            lambda resource=resource: _collection(resource),
-            methods=["GET"],
-            name=f"list_{resource}",
-        )
-        app.add_api_route(
-            f"/api/v1/{resource}/{{item_id}}",
-            lambda item_id, resource=resource: _collection(resource, item_id),
-            methods=["GET"],
-            name=f"get_{resource}",
-        )
-
-    @app.get("/api/v1/evidence/{record_id}")
-    def evidence_by_id(record_id: str) -> dict[str, object]:
-        records = [record for record in fixture if record.identifier == record_id]
-        if not records:
-            return {"error": {"code": "NOT_FOUND", "message": "Evidence record was not found."}}
-        record = records[0]
-        return {
-            "item": asdict(record),
-            "level": engine.grade(record).value,
-            "score": engine.score(record),
-        }
-
-    @app.post("/api/v1/ingestion/pubmed")
-    async def ingest_pubmed(
-        query: str = Query(min_length=1, max_length=120),
-        limit: int = Query(default=10, ge=1, le=25),
-    ) -> dict[str, object]:
-        try:
-            records = await PubMedProvider().search(SearchQuery(query, limit=limit))
-        except ProviderError as exc:
-            return {"error": {"code": "PROVIDER_UNAVAILABLE", "message": str(exc)}}
-        return {
-            "provider": "pubmed",
-            "items": [asdict(record) for record in records],
-            "count": len(records),
-        }
-
-    @app.post("/api/v1/ingestion/clinical-trials")
-    async def ingest_trials(
-        query: str = Query(min_length=1, max_length=120),
-        limit: int = Query(default=10, ge=1, le=25),
-    ) -> dict[str, object]:
-        try:
-            records = await ClinicalTrialsProvider().search(SearchQuery(query, limit=limit))
-        except ProviderError as exc:
-            return {"error": {"code": "PROVIDER_UNAVAILABLE", "message": str(exc)}}
-        return {
-            "provider": "clinicaltrials.gov",
-            "items": [asdict(record) for record in records],
-            "count": len(records),
-        }
-
+    @app.get("/api/v1/{resource}")
+    def unavailable(resource: str) -> None:
+        raise HTTPException(404, {"code": "RESOURCE_UNAVAILABLE",
+                                  "message": "This resource is not implemented in this preview"})
     return app

@@ -1,0 +1,10 @@
+# Runtime dependencies for the Vercel serverless entrypoint (api/index.py).
+# pyproject.toml keeps fastapi/sqlalchemy/asyncpg as optional extras
+# ([api] and [db]); Vercel's Python runtime only installs base
+# pyproject.toml dependencies, so this file makes the extras explicit for
+# the deployed function.
+httpx>=0.28,<1
+defusedxml>=0.7,<1
+fastapi>=0.110
+sqlalchemy[asyncio]>=2.0,<3
+asyncpg>=0.29,<1

@@ -43,11 +43,7 @@ class CrossrefProvider(LiteratureProvider):
             authors=tuple(a for a in authors if a),
             journal=(item.get("container-title") or [None])[0],
             doi=doi or None,
-            publication_types=(
-                item.get(
-                    "type",
-                ),
-            ),
+            publication_types=(str(item["type"]),) if item.get("type") else (),
             provenance=Provenance(
                 "crossref", f"DOI:{doi}", f"https://doi.org/{doi}", datetime.now(UTC).isoformat()
             ),
