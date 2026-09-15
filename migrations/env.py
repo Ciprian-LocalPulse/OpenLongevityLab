@@ -1,10 +1,13 @@
 """Run versioned migrations using the configured async engine."""
 import asyncio
 from os import environ
+
 from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.ext.asyncio import create_async_engine
+
 from openlongevity.db import Base
+
 
 def configure(connection):
     context.configure(connection=connection, target_metadata=Base.metadata, compare_type=True)

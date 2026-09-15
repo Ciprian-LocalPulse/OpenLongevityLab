@@ -177,7 +177,9 @@ def create_app(
     @app.get("/api/v1/publications/{identifier}", response_model=PublicationResponse)
     async def publication(identifier: str) -> PublicationResponse:
         if len(identifier) > 160:
-            raise HTTPException(422, {"code": "INVALID_IDENTIFIER", "message": "Identifier too long"})
+            raise HTTPException(
+                422, {"code": "INVALID_IDENTIFIER", "message": "Identifier too long"}
+            )
         item = await require_repository().get(identifier)
         if item is None:
             raise HTTPException(404, {"code": "NOT_FOUND", "message": "Publication not found"})
@@ -217,8 +219,9 @@ def create_app(
 
     @app.get("/api/v1/research-gaps")
     def gaps(topic: str = Query(min_length=1, max_length=120)) -> dict[str, Any]:
+        gaps_found = ResearchGapDetector(engine).detect(topic, fixtures)
         return {"mode": "fixture-only", "disclaimer": DISCLAIMER,
-                "items": [asdict(gap) for gap in ResearchGapDetector(engine).detect(topic, fixtures)]}
+                "items": [asdict(gap) for gap in gaps_found]}
 
     @app.get("/api/v1/graph")
     def graph() -> dict[str, Any]:

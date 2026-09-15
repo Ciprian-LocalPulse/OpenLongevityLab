@@ -6,8 +6,8 @@ from os import getenv
 from xml.etree import ElementTree
 
 import httpx
-from defusedxml.ElementTree import fromstring
 from defusedxml.common import DefusedXmlException
+from defusedxml.ElementTree import fromstring
 
 from .base import Provenance, ProviderError, Publication, SearchQuery
 
@@ -98,7 +98,11 @@ class PubMedProvider:
         for article in root.findall(".//PubmedArticle"):
             pmid = article.findtext("./MedlineCitation/PMID")
             title_node = article.find(".//ArticleTitle")
-            title = " ".join("".join(title_node.itertext()).split()) if title_node is not None else ""
+            title = (
+                " ".join("".join(title_node.itertext()).split())
+                if title_node is not None
+                else ""
+            )
             if not pmid or not pmid.isdigit() or not title:
                 continue
             abstract = " ".join("".join(node.itertext()).strip()
@@ -131,4 +135,3 @@ class PubMedProvider:
                 )
             ))
         return records
-
