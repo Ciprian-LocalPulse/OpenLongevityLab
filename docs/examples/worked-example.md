@@ -6,3 +6,7 @@
 4. Export only records whose provenance and review status meet your protocol.
 
 The bundled SYN records are fixtures for this walkthrough and must not be cited as observations.
+
+---
+
+**Project author: CIPRIAN ȘTEFAN PLEȘCA — cercetător român independent.**

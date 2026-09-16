@@ -9,3 +9,7 @@
 | ClinicalTrials.gov | trial registration metadata | read-only API v2 | ClinicalTrials.gov terms |
 
 Adapters retain identifiers and retrieval timestamps. They do not copy full-text articles or imply endorsement by a source.
+
+---
+
+**Project author: CIPRIAN ȘTEFAN PLEȘCA — cercetător român independent.**

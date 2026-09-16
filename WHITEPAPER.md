@@ -1,7 +1,9 @@
 # OpenLongevity: a provenance-first computational infrastructure for aging research
 
-**Version 0.2.0 · Technical and scientific design specification · 14 September 2026**
-**Principal author and maintainer:** Ciprian Ștefan Pleșca
+**Technical specification and implementation audit · 15 September 2026 · baseline `9fddcbb`**
+**Principal author and maintainer: CIPRIAN ȘTEFAN PLEȘCA — cercetător român independent.**
+
+**Status:** the Python package declares 0.3.0; this document is not a verified release announcement. Diagrams that include automated evidence review or a fully connected dashboard describe the target architecture. Persisted publications and synthetic evidence currently follow separate paths.
 
 > OpenLongevity is research infrastructure. It organizes observations, metadata, and review workflows; it does not diagnose disease, prescribe treatment, or establish that an intervention extends human lifespan.
 
@@ -9,7 +11,7 @@
 
 Aging research is distributed across publications, registries, omics assays, biomarker studies, animal experiments, and clinical trials. These sources use different identifiers, vocabularies, study designs, and reporting conventions. A search interface alone cannot preserve the distinctions that determine whether a result is reproducible or clinically relevant.
 
-OpenLongevity defines a typed evidence record, a provenance contract, a study-design hierarchy, and a graph model that keep source observations separate from computational interpretation. The platform provides read-only adapters for PubMed, Europe PMC, OpenAlex, Crossref, and ClinicalTrials.gov; deterministic heuristics for evidence navigation and research-gap detection; PostgreSQL-ready persistence; and a dashboard for human review. The design is intentionally conservative: uncertainty, missingness, retractions, and disagreement remain visible.
+OpenLongevity defines typed evidence records, provider provenance, a study-design taxonomy, and an experimental graph abstraction. The repository contains read-only metadata adapters, evidence-navigation heuristics, a PostgreSQL publication repository, and a TypeScript interface shell. An operational human-review dashboard and a validated publication-to-evidence extraction pipeline have not been established. Persisted publication search must remain distinguishable from synthetic evidence and graph demonstrations.
 
 This document describes the system boundary, data model, algorithms, validation plan, threat model, and roadmap. It is an engineering specification and a reproducibility commitment, not a claim of scientific discovery.
 
@@ -63,29 +65,29 @@ flowchart TB
     REVIEW[Human reviewer] -->|review status| DB
 ```
 
-Provider responses are untrusted input. The adapter layer validates shape, bounds pagination, refuses redirects, limits retries, and raises a typed `ProviderError`. No provider response is treated as a scientific conclusion merely because it is parseable.
+Provider responses are untrusted input. The PubMed implementation includes bounded requests, response-size limits, selected retries, and typed failures; equivalent behavior must be checked separately for each other adapter. Successful parsing does not establish scientific validity. Human-review arrows above are proposed responsibilities, not an implemented authorization service.
 
 ## 3. Evidence data model
 
-An `EvidenceRecord` is the atomic unit shown in the API and dashboard. Its stable identifier is local; its external identifiers live inside provenance.
+An `EvidenceRecord` represents a study observation used by the heuristic engine. It is distinct from a provider `Publication` and its typed provenance envelope. The following synthetic example uses the implemented constructor; it is not a real study.
 
 ```python
 from openlongevity.models import EvidenceRecord, StudyType
 
 record = EvidenceRecord(
-    identifier="PMID:00000000",
+    identifier="SYNTHETIC:WHITEPAPER-001",
     title="Example observation",
-    study_type=StudyType.OBSERVATIONAL_HUMAN,
-    population="defined cohort",
-    intervention_or_exposure="exposure as reported",
-    outcome="endpoint as reported",
+    study_type=StudyType.OBSERVATIONAL,
+    species="human",
+    endpoint="synthetic laboratory measurement",
+    source="software fixture; no real study",
     confidence=0.62,
     replication_status="unknown",
     tags=("inflammation", "aging"),
 )
 ```
 
-The record distinguishes:
+The scientific model should distinguish the following concepts. Some are currently free-text metadata or proposed invariants, rather than dedicated validated fields:
 
 | Field family | Meaning | Example guardrail |
 | --- | --- | --- |
@@ -100,21 +102,25 @@ The A–G hierarchy is a navigation taxonomy, not a validity theorem:
 
 ```mermaid
 flowchart LR
-    A[A: in-vitro] --> B[B: animal]
-    B --> C[C: observational human]
-    C --> D[D: clinical non-randomized]
-    D --> E[E: randomized controlled]
-    E --> F[F: systematic review/meta-analysis]
-    F --> G[G: computational]
+    A[A: systematic review] --- B[B: randomized controlled]
+    B --- C[C: clinical]
+    C --- D[D: observational]
+    D --- E[E: animal]
+    E --- F[F: in vitro]
+    F --- G[G: computational]
 ```
 
-The arrows communicate translational distance; a higher letter does not guarantee better measurement, lower bias, or relevance to every question.
+These are the implemented categories, not the GRADE framework or a calibrated ordering of validity. Retraction currently overrides a record's category to G, conflating design and publication status; preserve the original study type when interpreting this output.
 
 ## 4. Provider and provenance contract
 
 All literature adapters implement the `LiteratureProvider` protocol:
 
 ```python
+from typing import Protocol
+from openlongevity.providers.base import Publication, SearchQuery
+
+
 class LiteratureProvider(Protocol):
     async def search(self, query: SearchQuery) -> list[Publication]: ...
     async def get_by_id(self, external_id: str) -> Publication | None: ...
@@ -125,16 +131,18 @@ class LiteratureProvider(Protocol):
 ```json
 {
   "source_provider": "pubmed",
-  "source_identifier": "PMID:123456",
+  "source_identifier": "123456",
   "source_url": "https://pubmed.ncbi.nlm.nih.gov/123456/",
   "retrieved_at": "2026-09-14T14:00:00+00:00",
   "source_updated_at": null,
-  "license": "NCBI terms",
-  "normalization_version": "0.2.0"
+  "license": null,
+  "checksum": null,
+  "parser_version": "pubmed-2",
+  "normalization_version": "2"
 }
 ```
 
-Adapters are deliberately metadata-first. Full-text redistribution, bulk crawling, and upstream writes are outside the default contract. Rate limits, attribution, and terms for each source are documented in [`docs/data/DATA_SOURCES.md`](docs/data/DATA_SOURCES.md).
+This JSON illustrates field structure, not a retrieved record. Real PubMed parsing calculates a checksum from canonicalized article XML. Parser, normalization, and package versions describe different things. Unknown licensing must remain unknown. Full-text redistribution and upstream writes are outside the default contract. See [`docs/data/DATA_SOURCES.md`](docs/data/DATA_SOURCES.md).
 
 ## 5. Evidence extraction and scoring
 
@@ -146,12 +154,12 @@ The evidence engine computes two independent outputs:
 The score is not an effect size, posterior probability, quality certification, or clinical recommendation. In pseudocode:
 
 ```text
-base ← design_weight(study_type)
-confidence ← clamp(record.confidence, 0, 1)
-replication ← 1.15 if independently replicated else 0.85 if unreplicated else 1.0
-sample ← min(1.25, 0.75 + log10(max(sample_size, 10)) / 10)
-age_decay ← exp(-years_since_publication / half_life)
-score ← 0 if retracted else clamp(base × confidence × replication × sample × age_decay, 0, 1)
+base weights A..G ← 0.95, 0.85, 0.70, 0.50, 0.35, 0.20, 0.10
+replication ← 1.15 for replicated/independent; 0.85 for unknown/unreplicated; else 1
+sample ← min(1.15, 0.85 + n / (n + 200)) if n exists; else 1
+age ← max(0, years since publication using current UTC time)
+age_factor ← max(0.75, 1 - age * 0.01) for parseable date; else 1
+score ← 0 if retracted; else round(clamp(base × confidence × replication × sample × age_factor, 0, 1), 4)
 ```
 
 The engine also groups records by normalized topic tags and reports opposing `positive` and `negative` directions as `Contradiction` objects. It does not resolve disagreements automatically; reviewers must inspect endpoints, populations, interventions, and possible corrections.
@@ -186,12 +194,12 @@ Multi-omics integration is sample-keyed and missingness-preserving:
 from openlongevity.analysis import MultiOmicsSample, OmicsLayer, integrate_samples
 
 integrated = integrate_samples([
-    MultiOmicsSample("S1", OmicsLayer.GENOMICS, {"TP53": 1.0}),
-    MultiOmicsSample("S1", OmicsLayer.PROTEOMICS, {"IL6": 2.4}),
+    MultiOmicsSample("S1", "P1", OmicsLayer.GENOMICS, {"example": 1.0}),
+    MultiOmicsSample("S1", "P1", OmicsLayer.PROTEOMICS, {"example": None}),
 ])
 ```
 
-The biological-age module provides a transparent standardized OLS baseline and reports MAE, RMSE, and R². The survival module provides Kaplan–Meier points with censoring. The pathway module provides hypergeometric enrichment with Benjamini–Hochberg correction. These are reference implementations for reproducible analysis, not clinically validated models.
+The biological-age module provides a standardized OLS baseline and regression metrics. The survival module provides Kaplan–Meier points without confidence bands or competing-risk analysis. The pathway module calculates hypergeometric tails, but its current rank adjustment lacks the reverse cumulative minimum for standard Benjamini–Hochberg adjusted values and excludes zero-overlap pathways. It must not be described as validated false-discovery-rate control. Multi-omics integration also overwrites repeated sample/layer entries and does not enforce participant consistency. These limitations require code changes and reference tests before broader research use.
 
 ## 8. API surface
 
@@ -199,21 +207,23 @@ The versioned API exposes:
 
 | Route | Purpose |
 | --- | --- |
-| `GET /api/v1/health` | service and provider status |
-| `GET /api/v1/evidence` | filtered fixture or persisted evidence |
+| `GET /api/v1/health` | limited service/database status; provider not probed |
+| `GET /api/v1/evidence` | filtered synthetic fixtures |
 | `GET /api/v1/evidence/{id}` | one record with grade and score |
-| `GET /api/v1/search` | unified resource search |
+| `GET /api/v1/search` | persisted publication title filtering |
+| `GET /api/v1/publications` | persisted publication list |
+| `GET /api/v1/publications/{id}` | persisted publication detail |
+| `GET /api/v1/publications/{id}/history` | stored publication revisions |
 | `GET /api/v1/research-gaps` | deterministic gap hypotheses |
 | `GET /api/v1/graph` | typed relationship view |
-| `GET /api/v1/{resource}` | paginated catalog resources |
-| `POST /api/v1/ingestion/pubmed` | bounded read-only PubMed query |
-| `POST /api/v1/ingestion/clinical-trials` | bounded read-only trial query |
+| `GET /api/v1/{resource}` | unavailable-resource error |
+| `POST /api/v1/ingestion/pubmed` | operator-key-protected query and local persistence |
 
 Production deployment must add authentication, rate limiting, structured request logging, database migrations, and monitoring. The development fixture endpoints are intentionally deterministic and labelled as synthetic.
 
 ## 9. Persistence and reproducibility
 
-`Database` creates an async SQLAlchemy engine from `DATABASE_URL`; `EvidenceRepository` upserts normalized rows while serializing provenance. The database layer is optional so parser tests remain fast and offline.
+`Database` creates an async SQLAlchemy engine from `DATABASE_URL`; `PublicationRepository` stores publications and revision payloads. Alembic manages the schema. Install the database extras with the API extras for this application. Parser-only tests can remain offline. The repository uses PostgreSQL-specific operations, so another database is not an interchangeable integration-test substitute.
 
 ```mermaid
 sequenceDiagram
@@ -229,11 +239,11 @@ sequenceDiagram
     R-->>C: persisted identity
 ```
 
-Every release records the Python, Node, and Rust toolchain expectations, runs tests in CI, and publishes an immutable tag. A researcher can reproduce a parser result from a recorded fixture without contacting the network.
+A reproducible release should record toolchain versions, resolved dependencies, test results, and an immutable tag. Those are acceptance requirements, not proof that every historical release satisfied them. Recorded parser fixtures support offline replay; live queries can change as upstream databases evolve.
 
 ## 10. Validation plan
 
-The project uses layered validation:
+The following is the required validation plan; it is not a report that every listed check has passed:
 
 1. **Unit tests:** model invariants, parser fixtures, scoring, gap signals, survival censoring, pathway correction, and multi-omics joins.
 2. **API integration tests:** health, search, not-found errors, and structured provider failures.
@@ -251,7 +261,7 @@ Responsible AI requirements are operational: preserve source text boundaries, la
 
 ## 12. Current status and research roadmap
 
-Version 0.2.0 is a **research infrastructure MVP foundation**. It has real read-only adapters and testable computational primitives, but it is not a validated clinical or population-scale system. The next milestones are:
+The audited repository is a **research software prototype with partially integrated infrastructure**. Its Python package declares 0.3.0, while the frontend package still declares 0.2.0. The historical milestone diagram below expresses aspirations, not demonstrated completion dates or a release guarantee:
 
 ```mermaid
 timeline
@@ -267,7 +277,27 @@ Progress toward v1.0 requires independent scientific review, benchmark datasets,
 
 ## 13. How to cite and contribute
 
-Use the versioned citation in [`CITATION.cff`](CITATION.cff) and identify the provider and retrieval date for any source-derived result. Contributions should include tests, provenance behavior, limitations, and an update to the relevant ADR or data-source record. See [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md), and [`docs/wiki/Developer-Guide.md`](docs/wiki/Developer-Guide.md).
+Use [`CITATION.cff`](CITATION.cff) together with the exact commit used, and identify providers and retrieval dates separately. Contributions should include tests, provenance behavior, limitations, and an update to the relevant architectural decision. See [`CONTRIBUTING.md`](CONTRIBUTING.md), [`GOVERNANCE.md`](GOVERNANCE.md), and [the documentation index](docs/README.md).
+
+## 14. Audit qualifications and acceptance criteria
+
+Publication persistence currently commits one record at a time. A later failure can leave earlier records stored, so ingestion is not an atomic batch. Content hashing excludes retrieval time, separating repeated observation from changed content, but the revision tables are not a cryptographically immutable ledger. Database privileges still govern modification and deletion. A backup is only operational evidence when restoration has been rehearsed and the recovered schema and content have been checked.
+
+Search currently filters titles. It does not search full text, reconcile multiple providers, or document the exhaustive query protocol required for a systematic review. Evidence and gap routes use fixtures independently of persisted publications. The graph response is illustrative. A functioning publication list therefore cannot establish that the entire research pipeline has run successfully. Integration evidence must show identifiers crossing each boundary with their origin and transformation history intact.
+
+The CI seed is synthetic test material. Publication serialization currently assigns `synthetic: false` without deriving authenticity from source verification, so that flag alone is unreliable for records inserted outside the provider path. Fixing this needs an explicit origin model and a regression test; the present documentation correction does not resolve the runtime defect. Similarly, a healthy database response establishes only limited connectivity/schema information, not complete migration compatibility or scientific data quality.
+
+Evaluation should be organized around falsifiable claims. Parser accuracy requires an annotated corpus with field-level disagreement, correction notices, and missing-data cases. Storage integrity requires unchanged replay, changed-content revisions, concurrent writes, identity collisions, and partial failures. Scientific extraction requires a separate reference annotation protocol with study-level data splitting and recorded reviewer disagreement. No benchmark scores or independent review outcomes are asserted here.
+
+Navigation scores depend on hand-selected constants and, for dated records, current UTC time. They are not calibrated probabilities. Reproduction must capture the execution time or introduce a future explicit as-of parameter. Sensitivity analysis should compare ordering after removing sample-size, recency, and replication multipliers. Stable arithmetic is useful, but stability is not evidence that the resulting ranking is scientifically appropriate.
+
+The distinction between data entities, transformation activities, and responsible agents in [W3C PROV-DM](https://www.w3.org/TR/prov-dm/) informs a future provenance export. The present envelope does not establish full conformance. [NCBI E-utilities documentation](https://www.ncbi.nlm.nih.gov/books/NBK25501/) remains the primary reference for the PubMed retrieval interface. These references support design choices; they do not certify this implementation.
+
+---
+
+**CIPRIAN ȘTEFAN PLEȘCA — cercetător român independent**
+
+Founder and principal author of OpenLongevity. Independent project; no institutional affiliation or external validation is implied.
 
 ## References and related specifications
 
