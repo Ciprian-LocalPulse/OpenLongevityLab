@@ -6,7 +6,7 @@ version: 0.2.0
 authors:
   - family-names: Pleșca
     given-names: Ciprian Ștefan
-    affiliation: Independent project creator
+    affiliation: Cercetător român independent (independent Romanian researcher)
 repository-code: https://github.com/Ciprian-LocalPulse/OpenLongevityLab
 license: Apache-2.0
 abstract: Open-source computational infrastructure for aging and longevity research.

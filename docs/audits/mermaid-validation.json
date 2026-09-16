@@ -1,0 +1,224 @@
+{
+  "check": "Mermaid syntax parsing; not visual layout verification",
+  "supported_fences": "Column-zero triple-backtick mermaid blocks, as used in this corpus",
+  "mermaid": "11.17.2",
+  "diagrams": 43,
+  "failed": 0,
+  "results": [
+    {
+      "path": "ACADEMIC_MANIFESTO.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "DATA_GOVERNANCE.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "GOVERNANCE.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "README.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "ROADMAP.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "WHITEPAPER.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "WHITEPAPER.md",
+      "diagram": 2,
+      "status": "pass"
+    },
+    {
+      "path": "WHITEPAPER.md",
+      "diagram": 3,
+      "status": "pass"
+    },
+    {
+      "path": "WHITEPAPER.md",
+      "diagram": 4,
+      "status": "pass"
+    },
+    {
+      "path": "WHITEPAPER.md",
+      "diagram": 5,
+      "status": "pass"
+    },
+    {
+      "path": "WHITEPAPER.md",
+      "diagram": 6,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/01-system-architecture.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/02-evidence-ontology.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/03-provider-provenance.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/04-causal-inference-boundary.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/05-biomarker-validation.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/06-multi-omics-integration.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/07-survival-analysis.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/08-research-gap-detection.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/09-model-evaluation.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/10-reproducibility-protocol.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/11-data-governance-ethics.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/12-federated-evidence-retrieval.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/13-confounding-covariate-adjustment.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/14-longitudinal-biomarker-trajectories.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/15-genomic-variant-evidence-tiering.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/16-aging-clock-benchmarking.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/17-adverse-event-signal-surfacing.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/18-meta-analysis-heterogeneity.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/19-access-control-role-model.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/20-intervention-comparability.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/21-versioned-release-rollback.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/22-api-contract-provenance-envelope.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/23-persistence-architecture.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/24-monorepo-governance.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/25-threat-model-adversarial-input.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/26-data-source-catalog-licensing.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/27-documented-limitations-epistemic-boundary.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/28-independent-audit-methodology.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/29-human-review-boundary-machine-extraction.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/30-worked-example-fixture-boundary.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/academic/31-release-notes-scientific-changelog.md",
+      "diagram": 1,
+      "status": "pass"
+    }
+  ]
+}

@@ -1,0 +1,727 @@
+{
+  "minimum_prose_words": 1000,
+  "scope": "All tracked Markdown; excludes generated or untracked files and machine metadata",
+  "limitations": "Word count is not quality review; Mermaid syntax and URL fragments unchecked",
+  "documents": 79,
+  "documents_with_issues": 43,
+  "results": [
+    {
+      "path": ".github/PULL_REQUEST_TEMPLATE.md",
+      "normalized_text_sha256": "c0306d4a1e674716dc11373bf0974e5ca558d5365a3522afcdc93ca25ebab13f",
+      "prose_words": 53,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "ACADEMIC_MANIFESTO.md",
+      "normalized_text_sha256": "4cca87bddf9d0f3e39f86a1f629399e58ce30e332c00179096b67c676d686485",
+      "prose_words": 1262,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "AUTHORS.md",
+      "normalized_text_sha256": "65c7abfd99c478fd9636dc55509863053eb18d54b3d29004fed8b853926f3a57",
+      "prose_words": 1220,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "CHANGELOG.md",
+      "normalized_text_sha256": "328ddb8fe333ff689061967de91999fc5185769d04fd4503fac563b0c7229165",
+      "prose_words": 1168,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "normalized_text_sha256": "00391338f35d0c23fb4e76f8aca673ef9c4cfb437ee10a00b068a65e52bba8a2",
+      "prose_words": 1163,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "DATA_GOVERNANCE.md",
+      "normalized_text_sha256": "be93675e6727258364523fb9a9ce5ef30ac86519f4d271c83488b6ab7d7a18ae",
+      "prose_words": 1099,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "DISCLAIMER.md",
+      "normalized_text_sha256": "47d32caf3e72a300bcfe08b7460b56fc0b77bba6411eb3a6c42c3deeffbd762a",
+      "prose_words": 1096,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "DONATE.md",
+      "normalized_text_sha256": "f6bb26a2222ad063f57f7f96f419dd34bb117fde6a651caa46ec0c22a1d7466d",
+      "prose_words": 1152,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "FAQ.md",
+      "normalized_text_sha256": "e7e05f01465675fc9953f76838dead827d05d82ba88bff912f90b377fbe475ed",
+      "prose_words": 1265,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "GLOSSARY.md",
+      "normalized_text_sha256": "168deef81f6747947b266f0a0170b487c808b889c10de34381b038f52bfdc2db",
+      "prose_words": 1325,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "GOVERNANCE.md",
+      "normalized_text_sha256": "436f88656181fef76cf5829af6e792df72badd3a0f218aca72d820aedc4599dc",
+      "prose_words": 1130,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "OPEN_SCIENCE.md",
+      "normalized_text_sha256": "6b5b6cd81bcb6cd96d7b24088bbe7ad62977e556bc10a187c6bdf632e2aabc5d",
+      "prose_words": 1136,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "PRIVACY.md",
+      "normalized_text_sha256": "b76807ea78e1c8afba6b0a30deb02c56708b99190a9b07a12faf813a35f55ac8",
+      "prose_words": 1167,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "README.md",
+      "normalized_text_sha256": "5ed346223279e2351e7687725bf4206ad1aef5c7cac644ef17556a59c27a09c5",
+      "prose_words": 1372,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "REPRODUCIBILITY.md",
+      "normalized_text_sha256": "55d304490e78f1d296241ba178d2648b884a92c7194b6f5bb836c253f1c4ef41",
+      "prose_words": 1135,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "RESEARCH_ETHICS.md",
+      "normalized_text_sha256": "75190023a68b429dcca06eba9271f472c18eb8bbd2cc7dab43fa488756e1906c",
+      "prose_words": 1188,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "ROADMAP.md",
+      "normalized_text_sha256": "667641e1ea15bcf31d66b38f7b18e9b039128c784819199d25c38e457e099c7d",
+      "prose_words": 1174,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "SECURITY.md",
+      "normalized_text_sha256": "db9f00e1b6077f14012810e332f9785b5c15afca1471d07dd71dd47b9cbc23af",
+      "prose_words": 1180,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "WHITEPAPER.md",
+      "normalized_text_sha256": "aa8087fcf4321becf89831524464e99f0dcc150e5628273b9cbad626eb372221",
+      "prose_words": 1923,
+      "mermaid_blocks": 6,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "config/README.md",
+      "normalized_text_sha256": "385bd5c6cfe1abd5f91de36f79f1b2ab2edb5b4061488235426bd0926403d565",
+      "prose_words": 29,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "datasets/clinical_trials/README.md",
+      "normalized_text_sha256": "b7a11b5f83df55a3352e73cd68659c820ab1450d47603ea0893c6ee238204307",
+      "prose_words": 39,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/API.md",
+      "normalized_text_sha256": "1ce87aad40d7d291ae37e67a71c2a32abf9008f702e7bfb9a784b3eb926a68b6",
+      "prose_words": 1219,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/README.md",
+      "normalized_text_sha256": "4ef3f2416a45e3b18e6aad2b805d9425929cace6c4c6a67d389800beb6151e47",
+      "prose_words": 1054,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/01-system-architecture.md",
+      "normalized_text_sha256": "174060497f7427ac4ac074c754a2b89d821b2ae42ab35f8e9daf4287e0e12389",
+      "prose_words": 1161,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/02-evidence-ontology.md",
+      "normalized_text_sha256": "0e4e90864b83c78c734aebea5bb852b5d8d6ab000a739910cbb634f91235cc5a",
+      "prose_words": 1229,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/03-provider-provenance.md",
+      "normalized_text_sha256": "48195818b32d5d0068ecab388a3a0f710819e220b71a062058adde8e07e6ad31",
+      "prose_words": 1219,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/04-causal-inference-boundary.md",
+      "normalized_text_sha256": "8b166f3bedc2fd552abedf7770dfe491b2dbea5cb9759f2e35979729f2e4b8be",
+      "prose_words": 1181,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/05-biomarker-validation.md",
+      "normalized_text_sha256": "1d519c9d14a91ce4b04a0a07e49e5dbbfae744a5b75953b0df4f721a01bb838e",
+      "prose_words": 1211,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/06-multi-omics-integration.md",
+      "normalized_text_sha256": "1643139e051b23f1e670d38e3451f605c22acaa1a87c09d50199082a72da7adb",
+      "prose_words": 1099,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/07-survival-analysis.md",
+      "normalized_text_sha256": "a13ee97488683bf8327137fac5db239a16deaffd8b6fc3197c5430cfe1c61b69",
+      "prose_words": 1145,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/08-research-gap-detection.md",
+      "normalized_text_sha256": "3fc47a3455d16f4b6718faa94b4bac42bc9c705b3ee951d01ed8e2ac15274528",
+      "prose_words": 1213,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/09-model-evaluation.md",
+      "normalized_text_sha256": "674010e2facab7768e5b4d96ba8d268251c0f4521f870b381dc95b8745e5a688",
+      "prose_words": 1160,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/10-reproducibility-protocol.md",
+      "normalized_text_sha256": "a22da3eaed3dc1a84e19c4ef88d896958877cff7acac638ce6c3ea468d47db44",
+      "prose_words": 1186,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/11-data-governance-ethics.md",
+      "normalized_text_sha256": "b2e3dc0e3464aff06fc52967fb514d43a8044ce02607ae9b388b6496357ed6ed",
+      "prose_words": 1182,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/12-federated-evidence-retrieval.md",
+      "normalized_text_sha256": "b2c6f53271e01432e1bdece6e09420eb97c1ba6456afb8303df5ddf804ea8fbc",
+      "prose_words": 207,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/13-confounding-covariate-adjustment.md",
+      "normalized_text_sha256": "5312a72a8f25aafe585cfc8857435b485c9a94ab826b8ddcd94c2c7a6833ec3d",
+      "prose_words": 190,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/14-longitudinal-biomarker-trajectories.md",
+      "normalized_text_sha256": "100c5eea6b82ffcb317c6e0ba78931ffb2d183519ee0bce11077b7ca817cc0e5",
+      "prose_words": 179,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/15-genomic-variant-evidence-tiering.md",
+      "normalized_text_sha256": "36d01475b74d2488b4bdaf7ef203621784ae0fb83565c0a802da59aab911df71",
+      "prose_words": 185,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/16-aging-clock-benchmarking.md",
+      "normalized_text_sha256": "715c6ac5329cef4b6d295238aa53f1f8e00ec17fa36ddf3d09bde58afbb840e4",
+      "prose_words": 181,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/17-adverse-event-signal-surfacing.md",
+      "normalized_text_sha256": "820404c9d582aaec362873400c65f3efcaced25fb07ed68ada0a71069e38ca99",
+      "prose_words": 194,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/18-meta-analysis-heterogeneity.md",
+      "normalized_text_sha256": "0c9fb1d30e15346e88acc384366493b8520a01767aedbae049b02eeb8fd704a3",
+      "prose_words": 194,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/19-access-control-role-model.md",
+      "normalized_text_sha256": "2cc62723be7d61515e993dc7e892e5ed699ab517c7b1e357592989135ae86a63",
+      "prose_words": 208,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/20-intervention-comparability.md",
+      "normalized_text_sha256": "2d4ce62991c3b9e7eec74401beaf68ea80d8083494ccd7e3f8936679551c9217",
+      "prose_words": 197,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/21-versioned-release-rollback.md",
+      "normalized_text_sha256": "851d9f90424d4661e70ab4f6f7d5732fa52d89ce6955ac4a857f0af476455ebf",
+      "prose_words": 196,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/22-api-contract-provenance-envelope.md",
+      "normalized_text_sha256": "88c34d821d70b0fb7338cb3de543bfb3ec08fa93c91bf9dcfc38abd1633e494f",
+      "prose_words": 1182,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/23-persistence-architecture.md",
+      "normalized_text_sha256": "b0132dc18026cd76d4a0c28ec6530137c1c416c1e2857213fa4bf11751e8d942",
+      "prose_words": 1145,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/academic/24-monorepo-governance.md",
+      "normalized_text_sha256": "83b9cbb64fb3c14cf67edf5269ab6eeeca486d668954d5ac3d4897c8facf440a",
+      "prose_words": 264,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/25-threat-model-adversarial-input.md",
+      "normalized_text_sha256": "4781dbdee49c1067a23c4ed464fbf85123464c3d55fb1042968a0d60a5112003",
+      "prose_words": 294,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/26-data-source-catalog-licensing.md",
+      "normalized_text_sha256": "ed8aae662ed322317efb543df40a466c53a5908b763d850819620c0e2ed7fb36",
+      "prose_words": 243,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/27-documented-limitations-epistemic-boundary.md",
+      "normalized_text_sha256": "9de03ec3a85c8c4a5488e09d894088392cf6e5ec86f017641dc9885e382a21db",
+      "prose_words": 288,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/28-independent-audit-methodology.md",
+      "normalized_text_sha256": "0dcd3446fafa3a479d0119851ee7cf5fe05169f78ee5060204370cca4ac2f0e9",
+      "prose_words": 287,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/29-human-review-boundary-machine-extraction.md",
+      "normalized_text_sha256": "4dd7ec7f94eedd34f03e0ecff20d44efa3286de082cea4645ff830ad8a74776a",
+      "prose_words": 269,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/30-worked-example-fixture-boundary.md",
+      "normalized_text_sha256": "8beb9ceba16578751d8e685073fcaeb7219fb887d8000ec4785dd259d60af75e",
+      "prose_words": 289,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/31-release-notes-scientific-changelog.md",
+      "normalized_text_sha256": "f454c0b86e57917cef17e89aa8bce935f4857e33c20cbd6f0faf9e5c92892709",
+      "prose_words": 273,
+      "mermaid_blocks": 1,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/academic/README.md",
+      "normalized_text_sha256": "775632feb444d17036b4e07e10ed0d7ce079ab1fcb71b21137bed7fcab0ef829",
+      "prose_words": 1161,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/architecture/adr/0001-monorepo.md",
+      "normalized_text_sha256": "8e787bcf5a021eb92a16e229f4e46bab9f857bfbece4f72a14d6c30c0e80f9fe",
+      "prose_words": 37,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/architecture/adr/0002-evidence-provenance.md",
+      "normalized_text_sha256": "c3ed62955982bd44072c4f62721bcaaeb9a410641a675bb8aba2153909fff407",
+      "prose_words": 34,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/architecture/adr/0006-read-only-providers.md",
+      "normalized_text_sha256": "978c1739adae9628e889bbf854b873d620cc15b41adba0adbf4e971602614066",
+      "prose_words": 33,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/architecture/adr/0007-postgres-persistence.md",
+      "normalized_text_sha256": "44cebdc9401318d4ac99a0e6dd4b3be8c50e86484d1484837cc9fa69ca0daa96",
+      "prose_words": 30,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/architecture/adr/0008-human-review-boundary.md",
+      "normalized_text_sha256": "3d01ca59fc89697e7d93cc849e2648a13ec3b6177c99598bca07d97647fb35fa",
+      "prose_words": 33,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/architecture/adr/0009-navigation-scoring.md",
+      "normalized_text_sha256": "c745cb8920d36751e5dfa960ec723f910945e97ad314ab130de58e20f38fb2d9",
+      "prose_words": 31,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/architecture/adr/0010-multi-omics-interfaces.md",
+      "normalized_text_sha256": "25c5918801f0f100ee0ee176a9dbb46ebc80c32708f00a389078a3722eb27093",
+      "prose_words": 30,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/audits/v0.3.0-baseline.md",
+      "normalized_text_sha256": "7afad3c9765c1f21e84947ce4487b27855a155a38d744373e3892f8cf89f43bd",
+      "prose_words": 1132,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "docs/biomarkers/Biomarkers.md",
+      "normalized_text_sha256": "d8bd6425b10a70e060aea01fc9cfc798f591cceb72483d61a0e057756a19ef37",
+      "prose_words": 46,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/data/DATA_SOURCES.md",
+      "normalized_text_sha256": "aaa6a08d18e6c813b81d9ab2564cbcfaa800075bae3bae79025a540e47dbaf22",
+      "prose_words": 85,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/evidence/Evidence-Model.md",
+      "normalized_text_sha256": "a9d70589420c46fd6d1e9c514368a3c76201b38ab84d30e680ef62ae663de5a9",
+      "prose_words": 49,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/examples/worked-example.md",
+      "normalized_text_sha256": "431250c8c5fbf80bd7f07c4d30263a228af83b4406645aab2ddc9b9764d87990",
+      "prose_words": 63,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/releases/v0.2.0.md",
+      "normalized_text_sha256": "edd4fdf009018d8886b44a7ab63fc0661abcb1ff2825542d6eb1a5940071137a",
+      "prose_words": 113,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/research/LIMITATIONS.md",
+      "normalized_text_sha256": "7d09cf8ae08b6c90d0877e10f608ade1d4b257562285f21dbb5845159ead0c35",
+      "prose_words": 115,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/research/Research-Gap-Detector.md",
+      "normalized_text_sha256": "8510bc46ad20cabd70f465d792a4fc4c2454a88ccb424906d26b8b356cb790b2",
+      "prose_words": 41,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "docs/security/THREAT_MODEL.md",
+      "normalized_text_sha256": "024bc73e59ee9a669d5ffb183cb3a354d4a18aff68039bda909a45da23287fae",
+      "prose_words": 71,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "hallmarks/cellular_senescence/README.md",
+      "normalized_text_sha256": "abaa9413f215cb88339d3d913bdc1f6a0e3f2fe1250d6cd702aa3ad4b13dc8fb",
+      "prose_words": 38,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "infrastructure/terraform/README.md",
+      "normalized_text_sha256": "85236420ba764b2dfd0d1f2b1033e958968ddbf5c56ac510865cbbd8fec554c1",
+      "prose_words": 28,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "migrations/README.md",
+      "normalized_text_sha256": "5cc4d8970c95e86a0b9601d990c10f1888e89dd10b7498fe502c6f3a80fb1e10",
+      "prose_words": 45,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "models/biological_age/README.md",
+      "normalized_text_sha256": "149ceb1c74d521144c9f204b9c3ed0598445b5fd53fb73b6d68b928ab11fef4a",
+      "prose_words": 41,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "notebooks/README.md",
+      "normalized_text_sha256": "b90dd98323914d8fec24bbd3bd309185e6f0780ffcce411bbbf3057dffad7be3",
+      "prose_words": 43,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "packages/rust/evidence-core/README.md",
+      "normalized_text_sha256": "c1bc7c6a69370a2fb93450d033d7b89564dc5790aff08fd40efd57df63ce842b",
+      "prose_words": 35,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    },
+    {
+      "path": "scripts/README.md",
+      "normalized_text_sha256": "5bccc2f0b5f95016616939c86fb52aafe5399d57fef62d226e6c2866fbcd2308",
+      "prose_words": 1039,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": []
+    },
+    {
+      "path": "services/README.md",
+      "normalized_text_sha256": "6e1d9229ad1c69063807becdb7aa6ff3ee0bf9c6a52e5c9a4688a598b2152008",
+      "prose_words": 39,
+      "mermaid_blocks": 0,
+      "broken_local_targets": [],
+      "issues": [
+        "below_word_threshold"
+      ]
+    }
+  ]
+}

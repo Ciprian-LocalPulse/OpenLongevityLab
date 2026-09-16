@@ -10,3 +10,8 @@ Describe the behavior and scientific scope of this change.
 - [ ] No unsupported medical claims are introduced.
 - [ ] Licenses and attribution are respected.
 - [ ] Breaking changes are documented.
+
+---
+
+**Project author: CIPRIAN ȘTEFAN PLEȘCA — cercetător român independent.**
+OpenLongevity · [Project repository](https://github.com/Ciprian-LocalPulse/OpenLongevityLab).

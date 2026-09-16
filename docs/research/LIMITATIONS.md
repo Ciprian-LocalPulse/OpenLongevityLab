@@ -9,3 +9,7 @@ OpenLongevity is a reproducibility and evidence-navigation tool. It is not a cli
 - Kaplan–Meier output requires correctly curated event and censoring times.
 - Small, biased, or non-representative datasets can produce misleading associations.
 - Synthetic fixtures in tests and the dashboard must never be cited as observations.
+
+---
+
+**Project author: CIPRIAN ȘTEFAN PLEȘCA — cercetător român independent.**
