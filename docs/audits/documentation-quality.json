@@ -3,7 +3,7 @@
   "scope": "All tracked Markdown; excludes generated or untracked files and machine metadata",
   "limitations": "Word count is not quality review; Mermaid syntax and URL fragments unchecked",
   "documents": 79,
-  "documents_with_issues": 43,
+  "documents_with_issues": 25,
   "results": [
     {
       "path": ".github/PULL_REQUEST_TEMPLATE.md",
@@ -285,103 +285,83 @@
     },
     {
       "path": "docs/academic/12-federated-evidence-retrieval.md",
-      "normalized_text_sha256": "b2c6f53271e01432e1bdece6e09420eb97c1ba6456afb8303df5ddf804ea8fbc",
-      "prose_words": 207,
+      "normalized_text_sha256": "c488b0c3e125af35cdaa685c5d528573cd60f6b1321ed5f3051edf9d80694f14",
+      "prose_words": 1160,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/13-confounding-covariate-adjustment.md",
-      "normalized_text_sha256": "5312a72a8f25aafe585cfc8857435b485c9a94ab826b8ddcd94c2c7a6833ec3d",
-      "prose_words": 190,
+      "normalized_text_sha256": "176daedf3466f36cdb86679cc1159a2eab168bc0bb9e95b3087b26802192af0e",
+      "prose_words": 1200,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/14-longitudinal-biomarker-trajectories.md",
-      "normalized_text_sha256": "100c5eea6b82ffcb317c6e0ba78931ffb2d183519ee0bce11077b7ca817cc0e5",
-      "prose_words": 179,
+      "normalized_text_sha256": "a27b9f2db217a5e0807289a75d0b5af7a521a91a5073d3d278c66fb2caf7cccc",
+      "prose_words": 1111,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/15-genomic-variant-evidence-tiering.md",
-      "normalized_text_sha256": "36d01475b74d2488b4bdaf7ef203621784ae0fb83565c0a802da59aab911df71",
-      "prose_words": 185,
+      "normalized_text_sha256": "6b13215a81629e63d4ba15dace4d6442bbeaf14b946193b7c2bcf65bc42981f7",
+      "prose_words": 1059,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/16-aging-clock-benchmarking.md",
-      "normalized_text_sha256": "715c6ac5329cef4b6d295238aa53f1f8e00ec17fa36ddf3d09bde58afbb840e4",
-      "prose_words": 181,
+      "normalized_text_sha256": "65ea784d416f7dc2aa566c8e1488551bbef8d7ec245c6b36e194604ed0e43695",
+      "prose_words": 1039,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/17-adverse-event-signal-surfacing.md",
-      "normalized_text_sha256": "820404c9d582aaec362873400c65f3efcaced25fb07ed68ada0a71069e38ca99",
-      "prose_words": 194,
+      "normalized_text_sha256": "ff32da15e90c32b849203f78a6b382d505260e207fe0b230692ce85148bc940a",
+      "prose_words": 1051,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/18-meta-analysis-heterogeneity.md",
-      "normalized_text_sha256": "0c9fb1d30e15346e88acc384366493b8520a01767aedbae049b02eeb8fd704a3",
-      "prose_words": 194,
+      "normalized_text_sha256": "f4fc7356855cacfc00c52e265c7f3ad63d6f7493a9f4445da0b429c9ed612ac5",
+      "prose_words": 1080,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/19-access-control-role-model.md",
-      "normalized_text_sha256": "2cc62723be7d61515e993dc7e892e5ed699ab517c7b1e357592989135ae86a63",
-      "prose_words": 208,
+      "normalized_text_sha256": "fa62714de9387be03874d555c19baec6d406daf329862d6e7b6ab0dfb670aa28",
+      "prose_words": 1019,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/20-intervention-comparability.md",
-      "normalized_text_sha256": "2d4ce62991c3b9e7eec74401beaf68ea80d8083494ccd7e3f8936679551c9217",
-      "prose_words": 197,
+      "normalized_text_sha256": "1add65867dde2b3bff2dd37adcfb7b68ba3ff81e8720550520d17cff94c83ef8",
+      "prose_words": 1006,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/21-versioned-release-rollback.md",
-      "normalized_text_sha256": "851d9f90424d4661e70ab4f6f7d5732fa52d89ce6955ac4a857f0af476455ebf",
-      "prose_words": 196,
+      "normalized_text_sha256": "ff2e23251bfc6d6758cb244de65d6b074c78669bb426924f24eb58770f1bfefa",
+      "prose_words": 1047,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/22-api-contract-provenance-envelope.md",
@@ -401,83 +381,67 @@
     },
     {
       "path": "docs/academic/24-monorepo-governance.md",
-      "normalized_text_sha256": "83b9cbb64fb3c14cf67edf5269ab6eeeca486d668954d5ac3d4897c8facf440a",
-      "prose_words": 264,
+      "normalized_text_sha256": "6ca79bb1cd9e276c097806c6092224e7d7da156514e2a7a2b6247f6de70dec9a",
+      "prose_words": 1006,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/25-threat-model-adversarial-input.md",
-      "normalized_text_sha256": "4781dbdee49c1067a23c4ed464fbf85123464c3d55fb1042968a0d60a5112003",
-      "prose_words": 294,
+      "normalized_text_sha256": "c8d30b77ccd59457ac6fcc21f6c12095dc70185998e943d646297bdc7a1d0e74",
+      "prose_words": 1108,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/26-data-source-catalog-licensing.md",
-      "normalized_text_sha256": "ed8aae662ed322317efb543df40a466c53a5908b763d850819620c0e2ed7fb36",
-      "prose_words": 243,
+      "normalized_text_sha256": "6c5a99e96f1b94f63e45414eb4df074f9ab85684212708a5596dadc777d53b5d",
+      "prose_words": 1002,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/27-documented-limitations-epistemic-boundary.md",
-      "normalized_text_sha256": "9de03ec3a85c8c4a5488e09d894088392cf6e5ec86f017641dc9885e382a21db",
-      "prose_words": 288,
+      "normalized_text_sha256": "d42f59651f447e42bb1994b38198412c0102bd3621345e395630f9df4c243e89",
+      "prose_words": 1038,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/28-independent-audit-methodology.md",
-      "normalized_text_sha256": "0dcd3446fafa3a479d0119851ee7cf5fe05169f78ee5060204370cca4ac2f0e9",
-      "prose_words": 287,
+      "normalized_text_sha256": "4d32b179ab3a426a48957a767c579e3ee860422c0e2f33a8cf2e547174c93c2e",
+      "prose_words": 1018,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/29-human-review-boundary-machine-extraction.md",
-      "normalized_text_sha256": "4dd7ec7f94eedd34f03e0ecff20d44efa3286de082cea4645ff830ad8a74776a",
-      "prose_words": 269,
+      "normalized_text_sha256": "756142f3d4ecd0bb585bffddbd9bc6d4df339c6de57f003ddb5f373d429a0d45",
+      "prose_words": 1026,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/30-worked-example-fixture-boundary.md",
-      "normalized_text_sha256": "8beb9ceba16578751d8e685073fcaeb7219fb887d8000ec4785dd259d60af75e",
-      "prose_words": 289,
+      "normalized_text_sha256": "8092bbea37a51c3a32abfca7144a769b82d856098196bcd221b7fde140216d3c",
+      "prose_words": 1021,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/31-release-notes-scientific-changelog.md",
-      "normalized_text_sha256": "f454c0b86e57917cef17e89aa8bce935f4857e33c20cbd6f0faf9e5c92892709",
-      "prose_words": 273,
+      "normalized_text_sha256": "84894ea75389131bd86a84c949471190e4d181b67e98a93f9237e21b0be8bd96",
+      "prose_words": 1014,
       "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/academic/README.md",
