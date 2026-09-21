@@ -18,6 +18,7 @@ from . import __version__
 from .constants import DISCLAIMER
 from .db import Database
 from .evidence import EvidenceEngine
+from .exports import build_citation_export, evidence_record_payload
 from .gaps import ResearchGapDetector
 from .models import EvidenceRecord, StudyType
 from .providers import PubMedProvider, SearchQuery
@@ -200,9 +201,16 @@ def create_app(
     @app.get("/api/v1/evidence")
     def evidence(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
         records = [r for r in fixtures if topic.casefold() in r.title.casefold()]
-        return {"items": [{**asdict(r), "synthetic": True, "level": engine.grade(r).value}
+        return {"items": [evidence_record_payload(r, synthetic=True, level=engine.grade(r).value)
                           for r in records], "mode": "fixture-only",
                 "summary": engine.summarize(records), "disclaimer": DISCLAIMER}
+
+    @app.get("/api/v1/evidence/export/citation")
+    def citation_export(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
+        records = [r for r in fixtures if topic.casefold() in r.title.casefold()]
+        payloads = [evidence_record_payload(r, synthetic=True, level=engine.grade(r).value)
+                    for r in records]
+        return {**build_citation_export(payloads), "source_mode": "fixture-only"}
 
     @app.get("/api/v1/evidence/{identifier}")
     def evidence_record(identifier: str) -> dict[str, Any]:

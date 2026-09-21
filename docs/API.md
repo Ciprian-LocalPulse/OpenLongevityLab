@@ -14,6 +14,7 @@ The service separates persisted publications from synthetic evidence demonstrati
 ```bash
 curl http://localhost:8000/api/v1/health
 curl 'http://localhost:8000/api/v1/evidence?topic=senescence'
+curl 'http://localhost:8000/api/v1/evidence/export/citation?topic=senescence'
 curl 'http://localhost:8000/api/v1/search?query=senescence&page=1&page_size=10'
 curl 'http://localhost:8000/api/v1/research-gaps?topic=senescence'
 curl http://localhost:8000/api/v1/graph
@@ -69,6 +70,10 @@ The ingestion response uses the publication-page shape, but its total is the num
 ## Demonstration resources and scientific interpretation
 
 Evidence, evidence detail, and research-gap routes operate on synthetic fixtures at this baseline. Their behavior is useful for interface and heuristic tests. It is not a live extraction of persisted publications. The graph response is also illustrative. A frontend should label these demonstrations wherever the results appear, including copied summaries and exports, because the origin distinction can otherwise be lost when a response is separated from its route.
+
+`GET /api/v1/evidence/export/citation` is the first executable export boundary for the fixture corpus. It returns `mode: citation-eligible`, an `items` list, an `excluded` list, totals for both lists, a schema version, and the research disclaimer. Under the current fixture-only evidence mode, `SYN-*` records are excluded with reason `synthetic_fixture`, so the citation-eligible item list is empty for the bundled cellular-senescence demonstration. This is intentional: the route proves that the platform can reject demonstration data rather than allowing attractive fixture records to leak into citation workflows.
+
+The citation export route should not be described as a complete publication export system. It does not yet produce bibliographic formats, persistent publication manifests, human-review certificates, or provider-backed evidence bundles. It establishes a narrow behavior that was previously documented only as a policy: synthetic fixtures are not observations and are excluded by default from citation-eligible evidence export. Future work can extend the same contract to persisted publication records once review status, source authenticity, and export manifests are implemented for that path.
 
 Evidence grades and scores require their methodological labels. The A–G mapping is a project taxonomy, and the numerical navigation score uses heuristic constants. Neither is a calibrated scientific certainty estimate. The score also depends on execution time when a publication date is present. The API's ability to serialize a number does not justify describing it as a treatment effect, probability of truth, or measure of human longevity benefit.
 

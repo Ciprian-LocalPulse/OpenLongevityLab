@@ -33,3 +33,17 @@ def test_missing_evidence_is_structured() -> None:
     client = TestClient(create_app())
     payload = client.get("/api/v1/evidence/unknown").json()
     assert payload["error"]["code"] == "NOT_FOUND"
+
+
+def test_citation_export_excludes_synthetic_fixtures() -> None:
+    client = TestClient(create_app())
+    response = client.get("/api/v1/evidence/export/citation", params={"topic": "senescence"})
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["mode"] == "citation-eligible"
+    assert payload["source_mode"] == "fixture-only"
+    assert payload["items"] == []
+    assert payload["total"] == 0
+    assert payload["excluded_total"] == 1
+    assert payload["excluded"][0]["identifier"] == "SYN-001"
+    assert payload["excluded"][0]["reason"] == "synthetic_fixture"
