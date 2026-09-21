@@ -2,7 +2,7 @@
   "check": "Mermaid syntax parsing; not visual layout verification",
   "supported_fences": "Column-zero triple-backtick mermaid blocks, as used in this corpus",
   "mermaid": "11.17.2",
-  "diagrams": 43,
+  "diagrams": 56,
   "failed": 0,
   "results": [
     {
@@ -217,6 +217,71 @@
     },
     {
       "path": "docs/academic/31-release-notes-scientific-changelog.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/architecture/adr/0001-monorepo.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/architecture/adr/0002-evidence-provenance.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/architecture/adr/0006-read-only-providers.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/architecture/adr/0007-postgres-persistence.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/architecture/adr/0008-human-review-boundary.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/architecture/adr/0009-navigation-scoring.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/architecture/adr/0010-multi-omics-interfaces.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/biomarkers/Biomarkers.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/data/DATA_SOURCES.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/evidence/Evidence-Model.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/research/LIMITATIONS.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/research/Research-Gap-Detector.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/security/THREAT_MODEL.md",
       "diagram": 1,
       "status": "pass"
     }
