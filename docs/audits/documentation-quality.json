@@ -3,7 +3,7 @@
   "scope": "All tracked Markdown; excludes generated or untracked files and machine metadata",
   "limitations": "Word count is not quality review; Mermaid syntax and URL fragments unchecked",
   "documents": 79,
-  "documents_with_issues": 25,
+  "documents_with_issues": 12,
   "results": [
     {
       "path": ".github/PULL_REQUEST_TEMPLATE.md",
@@ -453,73 +453,59 @@
     },
     {
       "path": "docs/architecture/adr/0001-monorepo.md",
-      "normalized_text_sha256": "8e787bcf5a021eb92a16e229f4e46bab9f857bfbece4f72a14d6c30c0e80f9fe",
-      "prose_words": 37,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "c9474342d94d5967cea375e318389f8e811bfcc32ec3b0e958cad47d8231ed38",
+      "prose_words": 1004,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/architecture/adr/0002-evidence-provenance.md",
-      "normalized_text_sha256": "c3ed62955982bd44072c4f62721bcaaeb9a410641a675bb8aba2153909fff407",
-      "prose_words": 34,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "40776ed3f047f9f59b797f089945762f995a96de3705f00e2e8a1243977e74ac",
+      "prose_words": 1027,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/architecture/adr/0006-read-only-providers.md",
-      "normalized_text_sha256": "978c1739adae9628e889bbf854b873d620cc15b41adba0adbf4e971602614066",
-      "prose_words": 33,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "9de7d59ce4c507ed01ece97e3ecd165e254f2c0b5047cfbac38b0a8e8470049c",
+      "prose_words": 1000,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/architecture/adr/0007-postgres-persistence.md",
-      "normalized_text_sha256": "44cebdc9401318d4ac99a0e6dd4b3be8c50e86484d1484837cc9fa69ca0daa96",
-      "prose_words": 30,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "135669b88cf4696aa52d68c9dc97b02ab64d8e4025c39b9c6a68b3e6a26f170e",
+      "prose_words": 1027,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/architecture/adr/0008-human-review-boundary.md",
-      "normalized_text_sha256": "3d01ca59fc89697e7d93cc849e2648a13ec3b6177c99598bca07d97647fb35fa",
-      "prose_words": 33,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "36ac5092aecf3d7ad98dec9aca15a49c3da7ce551fe6ee0d53b4d9b3a970df34",
+      "prose_words": 1014,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/architecture/adr/0009-navigation-scoring.md",
-      "normalized_text_sha256": "c745cb8920d36751e5dfa960ec723f910945e97ad314ab130de58e20f38fb2d9",
-      "prose_words": 31,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "ae8b9ec8f6c92baeb118d1539d3ef8ff537034f2c25d59b5bb5e3c9e414290e9",
+      "prose_words": 1013,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/architecture/adr/0010-multi-omics-interfaces.md",
-      "normalized_text_sha256": "25c5918801f0f100ee0ee176a9dbb46ebc80c32708f00a389078a3722eb27093",
-      "prose_words": 30,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "d1c4a2a578b625f9ff2f6fe6e8cfc64d591a861b3bea67b378145264d92b8dc2",
+      "prose_words": 1001,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/audits/v0.3.0-baseline.md",
@@ -531,33 +517,27 @@
     },
     {
       "path": "docs/biomarkers/Biomarkers.md",
-      "normalized_text_sha256": "d8bd6425b10a70e060aea01fc9cfc798f591cceb72483d61a0e057756a19ef37",
-      "prose_words": 46,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "9d8c66d3fbc322e9ac9c409551d152e7776bd1089ee35ee8a1e924c61360b324",
+      "prose_words": 1032,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/data/DATA_SOURCES.md",
-      "normalized_text_sha256": "aaa6a08d18e6c813b81d9ab2564cbcfaa800075bae3bae79025a540e47dbaf22",
-      "prose_words": 85,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "3c5aadf5bd0c574e990e46a89ae8bb7a07f775d7d32cf7e699ad92ab1da08697",
+      "prose_words": 1007,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/evidence/Evidence-Model.md",
-      "normalized_text_sha256": "a9d70589420c46fd6d1e9c514368a3c76201b38ab84d30e680ef62ae663de5a9",
-      "prose_words": 49,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "979b2d977540651c80e7c933f4b9e0e83374c0f3dcbe9ba4e51e04830395383a",
+      "prose_words": 1031,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/examples/worked-example.md",
@@ -581,33 +561,27 @@
     },
     {
       "path": "docs/research/LIMITATIONS.md",
-      "normalized_text_sha256": "7d09cf8ae08b6c90d0877e10f608ade1d4b257562285f21dbb5845159ead0c35",
-      "prose_words": 115,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "ad531d9f8687bebb691f7adf44171a52c84e7054bd66cb02403a455e4e26e141",
+      "prose_words": 1057,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/research/Research-Gap-Detector.md",
-      "normalized_text_sha256": "8510bc46ad20cabd70f465d792a4fc4c2454a88ccb424906d26b8b356cb790b2",
-      "prose_words": 41,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "08ce8127facded4eec7f44d2d77d12ec9a972b3182a088f98e54384330f6855a",
+      "prose_words": 1026,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/security/THREAT_MODEL.md",
-      "normalized_text_sha256": "024bc73e59ee9a669d5ffb183cb3a354d4a18aff68039bda909a45da23287fae",
-      "prose_words": 71,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "d684b9c98739c490f28ba2db9c057da13c0e1beb56915aeba73cfb9874e614a3",
+      "prose_words": 1031,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "hallmarks/cellular_senescence/README.md",
