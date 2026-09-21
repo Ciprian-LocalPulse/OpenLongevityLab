@@ -5,7 +5,7 @@ from dataclasses import asdict
 from typing import Any
 
 from .constants import DISCLAIMER
-from .models import EvidenceRecord
+from .models import EvidenceRecord, ReviewStatus
 
 CITATION_EXPORT_SCHEMA_VERSION = "citation-export-v1"
 
@@ -31,6 +31,16 @@ def is_synthetic_record(record: Mapping[str, Any]) -> bool:
     )
 
 
+def is_human_verified_record(record: Mapping[str, Any]) -> bool:
+    """Return whether a serialized record carries human verification metadata."""
+    return (
+        record.get("review_status") == ReviewStatus.VERIFIED
+        and bool(record.get("reviewed_by"))
+        and bool(record.get("reviewed_at"))
+        and bool(record.get("review_notes"))
+    )
+
+
 def build_citation_export(records: list[Mapping[str, Any]]) -> dict[str, Any]:
     """Build a citation-eligible export that excludes synthetic fixtures by default."""
     included: list[Mapping[str, Any]] = []
@@ -43,6 +53,13 @@ def build_citation_export(records: list[Mapping[str, Any]]) -> dict[str, Any]:
                 "identifier": identifier,
                 "title": title,
                 "reason": "synthetic_fixture",
+            })
+            continue
+        if not is_human_verified_record(record):
+            excluded.append({
+                "identifier": identifier,
+                "title": title,
+                "reason": "not_human_verified",
             })
             continue
         included.append(record)
