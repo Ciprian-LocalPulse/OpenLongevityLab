@@ -3,17 +3,15 @@
   "scope": "All tracked Markdown; excludes generated or untracked files and machine metadata",
   "limitations": "Word count is not quality review; Mermaid syntax and URL fragments unchecked",
   "documents": 79,
-  "documents_with_issues": 12,
+  "documents_with_issues": 0,
   "results": [
     {
       "path": ".github/PULL_REQUEST_TEMPLATE.md",
-      "normalized_text_sha256": "c0306d4a1e674716dc11373bf0974e5ca558d5365a3522afcdc93ca25ebab13f",
-      "prose_words": 53,
+      "normalized_text_sha256": "c1dc0033cf028d4c36dae2b6ef4a84b35c681d8be30f91a17f525ada9510f680",
+      "prose_words": 1032,
       "mermaid_blocks": 0,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "ACADEMIC_MANIFESTO.md",
@@ -161,23 +159,19 @@
     },
     {
       "path": "config/README.md",
-      "normalized_text_sha256": "385bd5c6cfe1abd5f91de36f79f1b2ab2edb5b4061488235426bd0926403d565",
-      "prose_words": 29,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "7187e6f07cf150fdcac8e1e6207fafdf448bd1afeaa7649fe2f798d850435788",
+      "prose_words": 1079,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "datasets/clinical_trials/README.md",
-      "normalized_text_sha256": "b7a11b5f83df55a3352e73cd68659c820ab1450d47603ea0893c6ee238204307",
-      "prose_words": 39,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "68cb4c1337a3dd0c1b09a4e50daec2f11b1f0691c50418289dfcb19f634ce007",
+      "prose_words": 1028,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/API.md",
@@ -541,23 +535,19 @@
     },
     {
       "path": "docs/examples/worked-example.md",
-      "normalized_text_sha256": "431250c8c5fbf80bd7f07c4d30263a228af83b4406645aab2ddc9b9764d87990",
-      "prose_words": 63,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "2dfebb91c6be9d714251f8a4777d095c84381303eed131730fc9904afc1a07d6",
+      "prose_words": 1054,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/releases/v0.2.0.md",
-      "normalized_text_sha256": "edd4fdf009018d8886b44a7ab63fc0661abcb1ff2825542d6eb1a5940071137a",
-      "prose_words": 113,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "8600e2cbe899f26fd6ea7d9e5436390eb5598ebe34406af8e9b2235763507796",
+      "prose_words": 1002,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "docs/research/LIMITATIONS.md",
@@ -585,63 +575,51 @@
     },
     {
       "path": "hallmarks/cellular_senescence/README.md",
-      "normalized_text_sha256": "abaa9413f215cb88339d3d913bdc1f6a0e3f2fe1250d6cd702aa3ad4b13dc8fb",
-      "prose_words": 38,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "bb8b08d6cf9726d4ca09403a1f23df1882702568fab9af36a944e2cf1f14f179",
+      "prose_words": 1009,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "infrastructure/terraform/README.md",
-      "normalized_text_sha256": "85236420ba764b2dfd0d1f2b1033e958968ddbf5c56ac510865cbbd8fec554c1",
-      "prose_words": 28,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "142a0e66ad78a87d49c251b15e52b9bd6478da5f3b3bd2b3a8fcb2f16811bc81",
+      "prose_words": 1033,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "migrations/README.md",
-      "normalized_text_sha256": "5cc4d8970c95e86a0b9601d990c10f1888e89dd10b7498fe502c6f3a80fb1e10",
-      "prose_words": 45,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "15910fb2b906c70d28e798a8137f74fa95656b4e17e0680cb76dc4dddcc4844c",
+      "prose_words": 1012,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "models/biological_age/README.md",
-      "normalized_text_sha256": "149ceb1c74d521144c9f204b9c3ed0598445b5fd53fb73b6d68b928ab11fef4a",
-      "prose_words": 41,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "a20f382575711d054f27e1d1b8d75342fbc24ea0f949cfed172b7daa3a8e28c8",
+      "prose_words": 1010,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "notebooks/README.md",
-      "normalized_text_sha256": "b90dd98323914d8fec24bbd3bd309185e6f0780ffcce411bbbf3057dffad7be3",
-      "prose_words": 43,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "c688c941740c9a48d42750640ba19d02039cee162e97e1b8f48a1e0c9e8b1a87",
+      "prose_words": 1008,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "packages/rust/evidence-core/README.md",
-      "normalized_text_sha256": "c1bc7c6a69370a2fb93450d033d7b89564dc5790aff08fd40efd57df63ce842b",
-      "prose_words": 35,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "531b0c42c49a16e6c2063e29a2a3485821b4fe9f21ded3861008f00f1306c896",
+      "prose_words": 1077,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     },
     {
       "path": "scripts/README.md",
@@ -653,13 +631,11 @@
     },
     {
       "path": "services/README.md",
-      "normalized_text_sha256": "6e1d9229ad1c69063807becdb7aa6ff3ee0bf9c6a52e5c9a4688a598b2152008",
-      "prose_words": 39,
-      "mermaid_blocks": 0,
+      "normalized_text_sha256": "cd278360e5a20e22cc1c9d27b66882ef83cc2224f499bfb1177e10b7aeae688f",
+      "prose_words": 1017,
+      "mermaid_blocks": 1,
       "broken_local_targets": [],
-      "issues": [
-        "below_word_threshold"
-      ]
+      "issues": []
     }
   ]
 }

@@ -2,7 +2,7 @@
   "check": "Mermaid syntax parsing; not visual layout verification",
   "supported_fences": "Column-zero triple-backtick mermaid blocks, as used in this corpus",
   "mermaid": "11.17.2",
-  "diagrams": 56,
+  "diagrams": 67,
   "failed": 0,
   "results": [
     {
@@ -63,6 +63,16 @@
     {
       "path": "WHITEPAPER.md",
       "diagram": 6,
+      "status": "pass"
+    },
+    {
+      "path": "config/README.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "datasets/clinical_trials/README.md",
+      "diagram": 1,
       "status": "pass"
     },
     {
@@ -271,6 +281,16 @@
       "status": "pass"
     },
     {
+      "path": "docs/examples/worked-example.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "docs/releases/v0.2.0.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
       "path": "docs/research/LIMITATIONS.md",
       "diagram": 1,
       "status": "pass"
@@ -282,6 +302,41 @@
     },
     {
       "path": "docs/security/THREAT_MODEL.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "hallmarks/cellular_senescence/README.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "infrastructure/terraform/README.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "migrations/README.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "models/biological_age/README.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "notebooks/README.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "packages/rust/evidence-core/README.md",
+      "diagram": 1,
+      "status": "pass"
+    },
+    {
+      "path": "services/README.md",
       "diagram": 1,
       "status": "pass"
     }
