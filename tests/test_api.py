@@ -1,4 +1,5 @@
 import os
+
 import pytest
 
 fastapi = pytest.importorskip("fastapi")
@@ -62,12 +63,14 @@ def test_review_endpoint_is_disabled_without_review_key() -> None:
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "REVIEW_DISABLED"
 
-
-def test_review_endpoint_requires_database_for_persistence(monkeypatch: pytest.MonkeyPatch) -> None:
-    # Ascundem variabilele de mediu doar pentru acest test, astfel incat baza de date sa para neconfigurata
+def test_review_endpoint_requires_database_for_persistence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Ascundem variabilele de mediu doar pentru acest test,
+    # astfel incat baza de date sa para neconfigurata
     monkeypatch.delenv("DATABASE_URL", raising=False)
     monkeypatch.delenv("TEST_DATABASE_URL", raising=False)
-    
+
     client = TestClient(create_app(review_key="review-secret"))
     response = client.post(
         "/api/v1/evidence/SYN-001/review",
