@@ -47,3 +47,56 @@ def test_citation_export_excludes_synthetic_fixtures() -> None:
     assert payload["excluded_total"] == 1
     assert payload["excluded"][0]["identifier"] == "SYN-001"
     assert payload["excluded"][0]["reason"] == "synthetic_fixture"
+
+
+def test_review_endpoint_is_disabled_without_review_key() -> None:
+    client = TestClient(create_app())
+    response = client.post(
+        "/api/v1/evidence/SYN-001/review",
+        json={
+            "status": "verified",
+            "reviewer": "Reviewer",
+            "reviewed_at": "2026-09-21T10:00:00+03:00",
+            "notes": "Checked against fixture source.",
+        },
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "REVIEW_DISABLED"
+
+def test_review_endpoint_requires_database_for_persistence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Ascundem variabilele de mediu doar pentru acest test,
+    # astfel incat baza de date sa para neconfigurata
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.delenv("TEST_DATABASE_URL", raising=False)
+
+    client = TestClient(create_app(review_key="review-secret"))
+    response = client.post(
+        "/api/v1/evidence/SYN-001/review",
+        headers={"X-Review-Key": "review-secret"},
+        json={
+            "status": "verified",
+            "reviewer": "Reviewer",
+            "reviewed_at": "2026-09-21T10:00:00+03:00",
+            "notes": "Checked against fixture source.",
+        },
+    )
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "DATABASE_NOT_CONFIGURED"
+
+
+def test_review_endpoint_rejects_machine_status_as_human_review() -> None:
+    client = TestClient(create_app(review_key="review-secret"))
+    response = client.post(
+        "/api/v1/evidence/SYN-001/review",
+        headers={"X-Review-Key": "review-secret"},
+        json={
+            "status": "machine_extracted",
+            "reviewer": "Reviewer",
+            "reviewed_at": "2026-09-21T10:00:00+03:00",
+            "notes": "Machine extraction is not verification.",
+        },
+    )
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "INVALID_REVIEW"

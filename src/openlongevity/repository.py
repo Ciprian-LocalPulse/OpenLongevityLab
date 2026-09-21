@@ -9,7 +9,7 @@ from typing import Any
 from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 
-from .db import Database, PublicationRevisionRow, PublicationRow
+from .db import Database, EvidenceReviewEventRow, PublicationRevisionRow, PublicationRow
 from .providers.base import Publication
 
 
@@ -90,4 +90,51 @@ class PublicationRepository:
             return [{"revision": row.revision, "payload": row.payload,
                      "content_hash": row.content_hash, "retrieved_at": row.retrieved_at}
                     for row in rows]
+
+
+class EvidenceReviewRepository:
+    def __init__(self, database: Database) -> None:
+        self.database = database
+
+    async def record_event(
+        self,
+        *,
+        record_identifier: str,
+        status: str,
+        reviewer: str,
+        reviewed_at: str,
+        notes: str,
+        payload: dict[str, Any],
+    ) -> dict[str, Any]:
+        async with self.database.sessions.begin() as session:
+            row = EvidenceReviewEventRow(
+                record_identifier=record_identifier,
+                status=status,
+                reviewer=reviewer,
+                reviewed_at=reviewed_at,
+                notes=notes,
+                payload=payload,
+            )
+            session.add(row)
+            await session.flush()
+            return self.serialize(row)
+
+    async def list_for_record(self, record_identifier: str) -> list[dict[str, Any]]:
+        async with self.database.sessions() as session:
+            rows = await session.scalars(select(EvidenceReviewEventRow).where(
+                EvidenceReviewEventRow.record_identifier == record_identifier
+            ).order_by(EvidenceReviewEventRow.id))
+            return [self.serialize(row) for row in rows]
+
+    @staticmethod
+    def serialize(row: EvidenceReviewEventRow) -> dict[str, Any]:
+        return {
+            "id": row.id,
+            "record_identifier": row.record_identifier,
+            "status": row.status,
+            "reviewer": row.reviewer,
+            "reviewed_at": row.reviewed_at,
+            "notes": row.notes,
+            "payload": row.payload,
+        }
 
