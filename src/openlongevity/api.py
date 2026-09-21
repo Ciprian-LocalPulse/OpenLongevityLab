@@ -20,9 +20,10 @@ from .db import Database
 from .evidence import EvidenceEngine
 from .exports import build_citation_export, evidence_record_payload
 from .gaps import ResearchGapDetector
-from .models import EvidenceRecord, StudyType
+from .models import EvidenceRecord, ReviewStatus, StudyType
 from .providers import PubMedProvider, SearchQuery
 from .providers.base import ProviderError, Publication
+from .review import apply_human_review
 
 
 class ProvenanceResponse(BaseModel):
@@ -72,6 +73,14 @@ class IngestionRequest(BaseModel):
     limit: int = Field(default=5, ge=1, le=25)
 
 
+class EvidenceReviewRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    status: ReviewStatus
+    reviewer: str = Field(min_length=1, max_length=120)
+    reviewed_at: str = Field(min_length=1, max_length=40)
+    notes: str = Field(min_length=1, max_length=2000)
+
+
 class RevisionResponse(BaseModel):
     revision: int
     payload: Publication
@@ -81,15 +90,19 @@ class RevisionResponse(BaseModel):
 
 def create_app(
     database_url: str | None = None, provider: PubMedProvider | None = None,
-    ingestion_key: str | None = None,
+    ingestion_key: str | None = None, review_key: str | None = None,
 ) -> FastAPI:
-    from .repository import PublicationRepository
+    from .repository import EvidenceReviewRepository, PublicationRepository
 
     database_url = database_url or getenv("DATABASE_URL")
     database = Database(database_url) if database_url else None
     repository = PublicationRepository(database) if database else None
+    review_repository = EvidenceReviewRepository(database) if database else None
     source = provider or PubMedProvider()
     key = ingestion_key if ingestion_key is not None else getenv("OPENLONGEVITY_INGESTION_KEY")
+    reviewer_key = (
+        review_key if review_key is not None else getenv("OPENLONGEVITY_REVIEW_KEY")
+    )
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
@@ -128,6 +141,12 @@ def create_app(
             raise HTTPException(503, {"code": "DATABASE_NOT_CONFIGURED",
                                       "message": "Configure and migrate PostgreSQL first"})
         return repository
+
+    def require_review_repository() -> EvidenceReviewRepository:
+        if review_repository is None:
+            raise HTTPException(503, {"code": "DATABASE_NOT_CONFIGURED",
+                                      "message": "Configure and migrate PostgreSQL first"})
+        return review_repository
 
     @app.get("/api/v1/health")
     async def health() -> dict[str, str]:
@@ -224,6 +243,54 @@ def create_app(
             if record["identifier"] == identifier:
                 return {"item": record, "mode": "fixture-only", "disclaimer": DISCLAIMER}
         raise HTTPException(404, {"code": "NOT_FOUND", "message": "Evidence fixture not found"})
+
+    def fixture_by_identifier(identifier: str) -> EvidenceRecord:
+        for record in fixtures:
+            if record.identifier == identifier:
+                return record
+        raise HTTPException(404, {"code": "NOT_FOUND", "message": "Evidence fixture not found"})
+
+    @app.post("/api/v1/evidence/{identifier}/review")
+    async def review_evidence_record(
+        identifier: str,
+        body: EvidenceReviewRequest,
+        x_review_key: str | None = Header(default=None),
+    ) -> dict[str, Any]:
+        if not reviewer_key:
+            raise HTTPException(503, {"code": "REVIEW_DISABLED",
+                                      "message": "Server-side review key is not configured"})
+        if not x_review_key or not secrets.compare_digest(x_review_key, reviewer_key):
+            raise HTTPException(401, {"code": "UNAUTHORIZED",
+                                      "message": "An operator review key is required"})
+        record = fixture_by_identifier(identifier)
+        try:
+            reviewed = apply_human_review(
+                record,
+                status=body.status,
+                reviewer=body.reviewer,
+                reviewed_at=body.reviewed_at,
+                notes=body.notes,
+            )
+        except ValueError as exc:
+            raise HTTPException(422, {"code": "INVALID_REVIEW", "message": str(exc)}) from exc
+        payload = evidence_record_payload(
+            reviewed, synthetic=True, level=engine.grade(reviewed).value
+        )
+        event = await require_review_repository().record_event(
+            record_identifier=reviewed.identifier,
+            status=reviewed.review_status.value,
+            reviewer=reviewed.reviewed_by or "",
+            reviewed_at=reviewed.reviewed_at or "",
+            notes=reviewed.review_notes or "",
+            payload=payload,
+        )
+        return {"mode": "review-event", "item": event, "disclaimer": DISCLAIMER}
+
+    @app.get("/api/v1/evidence/{identifier}/review-events")
+    async def review_events(identifier: str) -> dict[str, Any]:
+        fixture_by_identifier(identifier)
+        events = await require_review_repository().list_for_record(identifier)
+        return {"mode": "review-events", "items": events, "disclaimer": DISCLAIMER}
 
     @app.get("/api/v1/research-gaps")
     def gaps(topic: str = Query(min_length=1, max_length=120)) -> dict[str, Any]:

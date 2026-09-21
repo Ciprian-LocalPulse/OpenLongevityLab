@@ -35,6 +35,17 @@ class PublicationRevisionRow(Base):
     retrieved_at: Mapped[str] = mapped_column(String(40))
 
 
+class EvidenceReviewEventRow(Base):
+    __tablename__ = "evidence_review_events"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    record_identifier: Mapped[str] = mapped_column(String(160), index=True)
+    status: Mapped[str] = mapped_column(String(40))
+    reviewer: Mapped[str] = mapped_column(String(120))
+    reviewed_at: Mapped[str] = mapped_column(String(40))
+    notes: Mapped[str] = mapped_column(Text)
+    payload: Mapped[dict[str, Any]] = mapped_column(JSON)
+
+
 class Database:
     def __init__(self, url: str) -> None:
         self.engine = create_async_engine(url, pool_pre_ping=True)
