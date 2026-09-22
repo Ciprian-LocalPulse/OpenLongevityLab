@@ -17,6 +17,8 @@ SEED_TITLE = "Cellular senescence pathway study"
 RETRIEVED_AT = "2026-01-01T00:00:00Z"
 
 SEED_PAYLOAD = {
+    "origin": "synthetic",
+    "synthetic": True,
     "identifier": SEED_IDENTIFIER,
     "title": SEED_TITLE,
     "abstract": "Synthetic seed record used only for CI contract tests.",

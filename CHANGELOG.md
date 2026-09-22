@@ -2,6 +2,10 @@
 
 ## Unreleased — documentation and integrity audit
 
+Persisted publication responses now expose an explicit `origin` contract with `unknown`, `manual`, `provider`, and `synthetic` states plus a tri-state `synthetic` interpretation. Synthetic seeds and `SYN-*` or `SEED-*` identifiers remain synthetic even when their payload has provider-shaped metadata. Legacy rows without a documented origin are normalized conservatively as `unknown` rather than being presented as real provider retrievals. Revision history carries the normalized origin fields in each payload.
+
+PubMed parsing remains conservative: direct XML parsing and injected transports do not certify provider origin, while the ordinary built-in PubMed search path marks records as provider-derived before persistence. Tests now cover origin normalization, PubMed path classification, provider-shaped synthetic payloads, revision changes from unknown to manual origin, API list/detail/history responses, and the CI seed record's synthetic label.
+
 Evidence list, detail, and citation export now reconstruct current review metadata from the latest persisted event by ID. Historical events remain intact, synthetic origin remains authoritative, and configured storage failures return an error instead of stale fixture review metadata. Integration coverage exercises successive review states, deliberately backdated timestamps, and recovery through a fresh application instance.
 
 Review-event history now uses bounded cursor pagination with a default page size of fifty and a maximum of one hundred. Clients follow `next_after_id` to retrieve subsequent pages. PostgreSQL integration coverage verifies persisted review payloads, event-ID ordering, record isolation, and continued exclusion of reviewed fixtures from citation export.
@@ -16,7 +20,7 @@ Documentation tooling now counts prose separately from fenced code and diagrams,
 
 The abbreviated license file has been replaced with the official Apache License 2.0 text. Project attribution is recorded separately in NOTICE, and citation metadata identifies the author as an independent Romanian researcher. The existing release tag is preserved. The citation's release version is not silently advanced to an unpublished development version merely because the Python package declares that version.
 
-Known implementation issues remain visible: synthetic-origin serialization, incomplete pathway adjustment, duplicate multi-omics handling, and the absence of an operational scientific review service. The frontend still needs evidence of a production build and interaction testing beyond compiler-only scripts. No new deployment, clinical validation, or independent benchmark is asserted by this documentation entry.
+Known implementation issues remain visible: incomplete pathway adjustment, duplicate multi-omics handling, and the absence of an operational scientific review service. The frontend still needs evidence of a production build and interaction testing beyond compiler-only scripts. Publication origin classification is improved, but provider origin remains a retrieval-boundary label rather than scientific validation. No new deployment, clinical validation, or independent benchmark is asserted by this documentation entry.
 
 ## [0.2.0] - 2026-09-14
 

@@ -1,6 +1,7 @@
 """Bounded NCBI E-utilities ingestion with injectable HTTP transport."""
 import asyncio
 import hashlib
+from dataclasses import replace
 from datetime import UTC, datetime
 from os import getenv
 from xml.etree import ElementTree
@@ -9,6 +10,7 @@ import httpx
 from defusedxml.common import DefusedXmlException
 from defusedxml.ElementTree import fromstring
 
+from ..origins import PublicationOrigin
 from .base import Provenance, ProviderError, Publication, SearchQuery
 
 
@@ -77,7 +79,9 @@ class PubMedProvider:
             fetched = await self._request(client, "efetch.fcgi", {
                 "db": "pubmed", "id": ",".join(ids[:query.limit]), "retmode": "xml"
             })
-            return self._parse(fetched.text)
+            origin = (PublicationOrigin.PROVIDER if self.transport is None
+                      else PublicationOrigin.UNKNOWN)
+            return [replace(record, origin=origin) for record in self._parse(fetched.text)]
 
     async def get_by_id(self, external_id: str) -> Publication | None:
         pmid = external_id.removeprefix("PMID:")

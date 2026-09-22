@@ -21,8 +21,9 @@ from .evidence import EvidenceEngine
 from .exports import build_citation_export, evidence_record_payload
 from .gaps import ResearchGapDetector
 from .models import EvidenceRecord, ReviewStatus, StudyType
+from .origins import PublicationOrigin
 from .providers import PubMedProvider, SearchQuery
-from .providers.base import ProviderError, Publication
+from .providers.base import ProviderError
 from .review import apply_human_review
 
 
@@ -53,9 +54,28 @@ class PublicationResponse(BaseModel):
     retraction_status: str = "unknown"
     corrections: list[dict[str, str]] = Field(default_factory=list)
     revision: int
-    synthetic: Literal[False] = False
+    origin: PublicationOrigin
+    synthetic: bool | None
     first_retrieved_at: str
     last_retrieved_at: str
+
+
+class PublicationRevisionPayload(BaseModel):
+    identifier: str
+    title: str
+    abstract: str = ""
+    authors: list[str] = Field(default_factory=list)
+    journal: str | None = None
+    publication_date: str | None = None
+    doi: str | None = None
+    publication_types: list[str] = Field(default_factory=list)
+    mesh_terms: list[str] = Field(default_factory=list)
+    citation_count: int | None = None
+    provenance: ProvenanceResponse
+    retraction_status: str = "unknown"
+    corrections: list[dict[str, str]] = Field(default_factory=list)
+    origin: PublicationOrigin
+    synthetic: bool | None
 
 
 class PublicationPage(BaseModel):
@@ -83,7 +103,7 @@ class EvidenceReviewRequest(BaseModel):
 
 class RevisionResponse(BaseModel):
     revision: int
-    payload: Publication
+    payload: PublicationRevisionPayload
     content_hash: str
     retrieved_at: str
 
@@ -208,8 +228,10 @@ def create_app(
     @app.get("/api/v1/publications/{identifier}/history", response_model=list[RevisionResponse])
     async def history(identifier: str) -> list[RevisionResponse]:
         await publication(identifier)
-        return [RevisionResponse.model_validate(row)
-                for row in await require_repository().history(identifier)]
+        return [
+            RevisionResponse.model_validate(row)
+            for row in await require_repository().history(identifier)
+        ]
 
     engine = EvidenceEngine()
     fixtures = [EvidenceRecord(

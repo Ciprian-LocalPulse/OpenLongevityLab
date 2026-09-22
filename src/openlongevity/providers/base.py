@@ -5,6 +5,8 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Protocol
 
+from ..origins import PublicationOrigin
+
 
 class ProviderError(RuntimeError):
     """A recoverable upstream provider or parsing failure."""
@@ -58,6 +60,7 @@ class Publication:
     provenance: Provenance | None = None
     retraction_status: str = "unknown"
     corrections: tuple[dict[str, str], ...] = ()
+    origin: PublicationOrigin = PublicationOrigin.UNKNOWN
 
 
 @dataclass(frozen=True)
