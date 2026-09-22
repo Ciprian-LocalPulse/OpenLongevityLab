@@ -10,6 +10,7 @@ from sqlalchemy import func, select
 from sqlalchemy.dialects.postgresql import insert
 
 from .db import Database, EvidenceReviewEventRow, PublicationRevisionRow, PublicationRow
+from .origins import publication_origin_fields
 from .providers.base import Publication
 
 
@@ -21,8 +22,9 @@ class PublicationRepository:
         provenance = publication.provenance
         if provenance is None or not provenance.checksum:
             raise ValueError("Persistent publications require provenance and a source checksum")
-        payload = asdict(publication)
-        stable = asdict(publication)
+        publication_payload = asdict(publication)
+        payload = {**publication_payload, **publication_origin_fields(publication_payload)}
+        stable = {**payload, "provenance": dict(payload["provenance"])}
         stable["provenance"].pop("retrieved_at")
         digest = hashlib.sha256(
             json.dumps(stable, sort_keys=True, ensure_ascii=False).encode()
@@ -62,9 +64,13 @@ class PublicationRepository:
 
     @staticmethod
     def serialize(row: PublicationRow) -> dict[str, Any]:
-        return {**row.payload, "revision": row.revision, "synthetic": False,
-                "first_retrieved_at": row.first_retrieved_at,
-                "last_retrieved_at": row.last_retrieved_at}
+        return {
+            **row.payload,
+            **publication_origin_fields(row.payload),
+            "revision": row.revision,
+            "first_retrieved_at": row.first_retrieved_at,
+            "last_retrieved_at": row.last_retrieved_at,
+        }
 
     async def get(self, identifier: str) -> dict[str, Any] | None:
         async with self.database.sessions() as session:
@@ -87,9 +93,15 @@ class PublicationRepository:
             rows = await session.scalars(select(PublicationRevisionRow).where(
                 PublicationRevisionRow.publication_id == identifier
             ).order_by(PublicationRevisionRow.revision))
-            return [{"revision": row.revision, "payload": row.payload,
-                     "content_hash": row.content_hash, "retrieved_at": row.retrieved_at}
-                    for row in rows]
+            return [
+                {
+                    "revision": row.revision,
+                    "payload": {**row.payload, **publication_origin_fields(row.payload)},
+                    "content_hash": row.content_hash,
+                    "retrieved_at": row.retrieved_at,
+                }
+                for row in rows
+            ]
 
 
 class EvidenceReviewRepository:

@@ -34,7 +34,7 @@ The current baseline is a research prototype with partially integrated infrastru
 
 ## Immediate integrity and documentation priorities
 
-Correct the publication-origin model so that synthetic, manually entered, and genuinely retrieved records are classified through explicit provenance rather than a fixed false synthetic flag. The acceptance evidence should include the existing test seed, ordinary provider ingestion, and a deliberately provider-shaped synthetic payload. Classification must survive persistence, API responses, and presentation. A field-name change alone is insufficient if the underlying decision remains unverified.
+Publication-origin classification has moved from a fixed false synthetic flag to an explicit persistence contract. Synthetic seeds, manually documented records, ordinary PubMed provider-path records, and legacy unknown records now have different API semantics. Acceptance coverage includes the CI seed, ordinary PubMed search classification, a deliberately provider-shaped synthetic payload, persistence, list/detail responses, and revision history. The remaining work is presentation: the frontend must display these distinctions clearly rather than flattening them into a single visual style.
 
 Complete the documentation expansion with distinct, source-backed explanations rather than repeated filler. Every tracked Markdown file has a minimum prose target, but accuracy and implementation alignment remain separate requirements. The automated inventory should continue to expose short documents, missing attribution, and structural problems. Code examples need execution checks, and diagrams need to identify proposed components clearly. A passing word-count gate is not a substitute for editorial review.
 
