@@ -10,6 +10,16 @@ from openlongevity.api import create_app  # noqa: E402
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 
 
+@pytest.mark.parametrize("params", [
+    {"limit": 0}, {"limit": 101}, {"after_id": -1}, {"after_id": "invalid"},
+])
+def test_review_history_rejects_invalid_pagination(params: dict[str, object]) -> None:
+    with TestClient(create_app()) as client:
+        response = client.get("/api/v1/evidence/SYN-001/review-events", params=params)
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "INVALID_REQUEST"
+
+
 def test_health_contract() -> None:
     client = TestClient(create_app())
     health = client.get("/api/v1/health")

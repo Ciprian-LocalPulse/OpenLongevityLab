@@ -119,12 +119,19 @@ class EvidenceReviewRepository:
             await session.flush()
             return self.serialize(row)
 
-    async def list_for_record(self, record_identifier: str) -> list[dict[str, Any]]:
+    async def list_for_record(
+        self, record_identifier: str, *, after_id: int = 0, limit: int = 50,
+    ) -> tuple[list[dict[str, Any]], int | None]:
+        if after_id < 0 or not 1 <= limit <= 100:
+            raise ValueError("Review history requires after_id >= 0 and limit between 1 and 100")
         async with self.database.sessions() as session:
             rows = await session.scalars(select(EvidenceReviewEventRow).where(
-                EvidenceReviewEventRow.record_identifier == record_identifier
-            ).order_by(EvidenceReviewEventRow.id))
-            return [self.serialize(row) for row in rows]
+                EvidenceReviewEventRow.record_identifier == record_identifier,
+                EvidenceReviewEventRow.id > after_id,
+            ).order_by(EvidenceReviewEventRow.id).limit(limit + 1))
+            items = [self.serialize(row) for row in rows]
+            next_after_id = items[limit - 1]["id"] if len(items) > limit else None
+            return items[:limit], next_after_id
 
     @staticmethod
     def serialize(row: EvidenceReviewEventRow) -> dict[str, Any]:
