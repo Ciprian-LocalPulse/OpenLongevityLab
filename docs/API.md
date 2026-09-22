@@ -91,7 +91,24 @@ Review history accepts `after_id` (a nonnegative event identifier, default zero)
 curl 'http://localhost:8000/api/v1/evidence/SYN-001/review-events?after_id=0&limit=20'
 ```
 
-The repository fetches at most the requested limit plus one row, using the extra row to detect continuation. Cursors remain scoped to the requested evidence identifier. Concurrent writes can become visible in subsequent requests; this interface is not a frozen export snapshot. Existing clients that previously expected the entire history in one response must follow the cursor. Review events remain separate from the fixture read model and do not make synthetic records citation eligible. PostgreSQL integration tests exercise authenticated writes, persisted payloads, ordered pagination, record isolation, and fixture exclusion from citation export.
+The repository fetches at most the requested limit plus one row, using the extra row to detect continuation. Cursors remain scoped to the requested evidence identifier. Concurrent writes can become visible in subsequent requests; this interface is not a frozen export snapshot. Existing clients that previously expected the entire history in one response must follow the cursor. Review events supply current review metadata without making synthetic records citation eligible. PostgreSQL integration tests exercise authenticated writes, persisted payloads, ordered pagination, record isolation, and fixture exclusion from citation export.
+
+### Current review state
+
+The evidence list, evidence detail, and citation-export routes resolve current review metadata from the persisted event with the greatest database ID for each selected record. This ordering reflects allocated event identifiers, not reviewer-supplied timestamps or transaction commit timestamps. A later event can mark previously verified evidence as disputed. The earlier event remains available in the audit history. Reads use one grouped database query for the selected records rather than retrieving each record's full history.
+
+Only review status, reviewer, review timestamp, and review notes are projected onto the underlying evidence record. Stored event payloads cannot replace the record's source, identifier, study type, or synthetic classification. The preview continues to expose fixture evidence, and reviewing a fixture never makes it eligible for citation export. Persisted publication metadata is still a separate resource; this feature does not introduce scientific evidence extraction from those publications.
+
+Without a configured database, the fixture retains its original unreviewed state. With a configured database, storage errors return HTTP 503 instead of silently reverting to an unreviewed fixture. Events survive application restarts because the current state is reconstructed on each request. A fresh request sees the events visible to that query; cross-request snapshot isolation is not provided. The research-gap route remains a fixture demonstration and does not consume this review projection.
+
+```mermaid
+flowchart LR
+    A[Evidence fixture] --> C[Current evidence view]
+    B[Latest persisted review by event ID] --> C
+    C --> D[List and detail]
+    C --> E[Citation eligibility filter]
+    E --> F[Synthetic evidence excluded]
+```
 
 ## Failure and health interpretation
 

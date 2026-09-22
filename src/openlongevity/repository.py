@@ -96,6 +96,19 @@ class EvidenceReviewRepository:
     def __init__(self, database: Database) -> None:
         self.database = database
 
+    async def latest_for_records(self, identifiers: list[str]) -> dict[str, dict[str, Any]]:
+        """Read the greatest persisted event ID per record in one query."""
+        if not identifiers:
+            return {}
+        latest_ids = select(func.max(EvidenceReviewEventRow.id)).where(
+            EvidenceReviewEventRow.record_identifier.in_(identifiers),
+        ).group_by(EvidenceReviewEventRow.record_identifier)
+        async with self.database.sessions() as session:
+            rows = await session.scalars(select(EvidenceReviewEventRow).where(
+                EvidenceReviewEventRow.id.in_(latest_ids),
+            ))
+            return {row.record_identifier: self.serialize(row) for row in rows}
+
     async def record_event(
         self,
         *,

@@ -2,7 +2,9 @@
 
 ## Unreleased — documentation and integrity audit
 
-Review-event history now uses bounded cursor pagination with a default page size of fifty and a maximum of one hundred. Clients follow `next_after_id` to retrieve subsequent pages. PostgreSQL integration coverage verifies persisted review payloads, chronological insertion order, record isolation, and continued exclusion of reviewed fixtures from citation export. Review events do not yet update the evidence read model.
+Evidence list, detail, and citation export now reconstruct current review metadata from the latest persisted event by ID. Historical events remain intact, synthetic origin remains authoritative, and configured storage failures return an error instead of stale fixture review metadata. Integration coverage exercises successive review states, deliberately backdated timestamps, and recovery through a fresh application instance.
+
+Review-event history now uses bounded cursor pagination with a default page size of fifty and a maximum of one hundred. Clients follow `next_after_id` to retrieve subsequent pages. PostgreSQL integration coverage verifies persisted review payloads, event-ID ordering, record isolation, and continued exclusion of reviewed fixtures from citation export.
 
 The documentation work begun from commit `9fddcbb` expands the academic corpus, corrects implementation claims, and standardizes attribution to CIPRIAN ȘTEFAN PLEȘCA — cercetător român independent. It preserves the author's removal of the wiki and the additional academic topics. This section describes development work, not a published v0.3.0 release. Mandatory release gates remain a separate decision under the project request and governance policy.
 
