@@ -1,4 +1,5 @@
 import os
+from unittest.mock import AsyncMock
 
 import pytest
 
@@ -6,8 +7,39 @@ fastapi = pytest.importorskip("fastapi")
 from fastapi.testclient import TestClient  # noqa: E402
 
 from openlongevity.api import create_app  # noqa: E402
+from openlongevity.repository import EvidenceReviewRepository  # noqa: E402
 
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
+
+
+def test_evidence_without_database_retains_unreviewed_fixture(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    with TestClient(create_app()) as client:
+        detail = client.get("/api/v1/evidence/SYN-001").json()["item"]
+        listed = client.get("/api/v1/evidence").json()["items"][0]
+    assert detail == listed
+    assert detail["review_status"] == "unreviewed"
+    assert detail["synthetic"] is True
+
+
+@pytest.mark.parametrize("path", [
+    "/api/v1/evidence", "/api/v1/evidence/SYN-001", "/api/v1/evidence/export/citation",
+])
+def test_review_storage_failure_does_not_return_stale_evidence(
+    monkeypatch: pytest.MonkeyPatch, path: str,
+) -> None:
+    from sqlalchemy.exc import SQLAlchemyError
+
+    monkeypatch.setattr(
+        EvidenceReviewRepository, "latest_for_records",
+        AsyncMock(side_effect=SQLAlchemyError("storage unavailable")),
+    )
+    with TestClient(create_app(database_url="postgresql+asyncpg://localhost/unused")) as client:
+        response = client.get(path)
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "DATABASE_UNAVAILABLE"
 
 
 @pytest.mark.parametrize("params", [

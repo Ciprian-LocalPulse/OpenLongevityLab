@@ -217,32 +217,41 @@ def create_app(
         "illustrative marker", "synthetic fixture", confidence=0.55, tags=("senescence",)
     )]
 
+    async def current_records(records: list[EvidenceRecord]) -> list[EvidenceRecord]:
+        if review_repository is None:
+            return records
+        events = await review_repository.latest_for_records([r.identifier for r in records])
+        return [apply_human_review(
+            record, status=ReviewStatus(events[record.identifier]["status"]),
+            reviewer=events[record.identifier]["reviewer"],
+            reviewed_at=events[record.identifier]["reviewed_at"],
+            notes=events[record.identifier]["notes"],
+        ) if record.identifier in events else record for record in records]
+
     @app.get("/api/v1/evidence")
-    def evidence(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
-        records = [r for r in fixtures if topic.casefold() in r.title.casefold()]
+    async def evidence(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
+        records = await current_records(
+            [r for r in fixtures if topic.casefold() in r.title.casefold()]
+        )
         return {"items": [evidence_record_payload(r, synthetic=True, level=engine.grade(r).value)
                           for r in records], "mode": "fixture-only",
                 "summary": engine.summarize(records), "disclaimer": DISCLAIMER}
 
     @app.get("/api/v1/evidence/export/citation")
-    def citation_export(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
-        records = [r for r in fixtures if topic.casefold() in r.title.casefold()]
+    async def citation_export(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
+        records = await current_records(
+            [r for r in fixtures if topic.casefold() in r.title.casefold()]
+        )
         payloads = [evidence_record_payload(r, synthetic=True, level=engine.grade(r).value)
                     for r in records]
         return {**build_citation_export(payloads), "source_mode": "fixture-only"}
 
     @app.get("/api/v1/evidence/{identifier}")
-    def evidence_record(identifier: str) -> dict[str, Any]:
-        # FIX: call evidence() with an explicit topic="" instead of relying on the
-        # default value. The default is a fastapi.Query(...) sentinel object, which
-        # only gets resolved to a real string during an actual HTTP request. Calling
-        # evidence() directly as a plain Python function (as we do here) left `topic`
-        # as that Query object, causing: AttributeError: 'Query' object has no
-        # attribute 'casefold'.
-        for record in evidence(topic="")["items"]:
-            if record["identifier"] == identifier:
-                return {"item": record, "mode": "fixture-only", "disclaimer": DISCLAIMER}
-        raise HTTPException(404, {"code": "NOT_FOUND", "message": "Evidence fixture not found"})
+    async def evidence_record(identifier: str) -> dict[str, Any]:
+        record, = await current_records([fixture_by_identifier(identifier)])
+        return {"item": evidence_record_payload(
+            record, synthetic=True, level=engine.grade(record).value,
+        ), "mode": "fixture-only", "disclaimer": DISCLAIMER}
 
     def fixture_by_identifier(identifier: str) -> EvidenceRecord:
         for record in fixtures:

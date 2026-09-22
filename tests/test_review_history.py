@@ -36,11 +36,17 @@ async def test_review_history_round_trip_and_cursor() -> None:
                 created = []
                 for status in ("verified", "disputed", "human_reviewed"):
                     response = await client.post(
-                        "/api/v1/evidence/SYN-001/review", json={**body, "status": status},
+                        "/api/v1/evidence/SYN-001/review",
+                        json={**body, "status": status,
+                              "reviewed_at": f"2026-09-{22 - len(created)}T10:00:00+03:00"},
                         headers={"X-Review-Key": "test-review-key"},
                     )
                     assert response.status_code == 200
                     created.append(response.json()["item"])
+                    detail = (await client.get("/api/v1/evidence/SYN-001")).json()["item"]
+                    assert detail["review_status"] == status
+                    assert detail["reviewed_by"] == reviewer
+                    assert detail["synthetic"] is True
                 # Another record must never leak into this record's cursor page.
                 await repository.record_event(
                     record_identifier=f"OTHER-{reviewer}", status="verified", reviewer=reviewer,
@@ -66,6 +72,22 @@ async def test_review_history_round_trip_and_cursor() -> None:
                 exported = (await client.get("/api/v1/evidence/export/citation")).json()
                 assert exported["items"] == []
                 assert exported["excluded"][0]["reason"] == "synthetic_fixture"
+                latest = await repository.latest_for_records(["SYN-001", "MISSING"])
+                assert latest == {"SYN-001": created[-1]}
+                assert await repository.latest_for_records([]) == {}
+        # A fresh application instance must recover the same persisted review.
+        restarted = create_app(database_url=TEST_DATABASE_URL)
+        async with restarted.router.lifespan_context(restarted):
+            async with AsyncClient(
+                transport=ASGITransport(app=restarted), base_url="http://test",
+            ) as client:
+                response = await client.get("/api/v1/evidence", params={"topic": "senescence"})
+                assert response.status_code == 200
+                current = response.json()["items"][0]
+                assert current["review_status"] == "human_reviewed"
+                assert current["reviewed_by"] == reviewer
+                assert current["reviewed_at"] == created[-1]["reviewed_at"]
+                assert current["review_notes"] == body["notes"]
     finally:
         async with database.sessions.begin() as session:
             await session.execute(delete(EvidenceReviewEventRow).where(
