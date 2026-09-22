@@ -287,10 +287,17 @@ def create_app(
         return {"mode": "review-event", "item": event, "disclaimer": DISCLAIMER}
 
     @app.get("/api/v1/evidence/{identifier}/review-events")
-    async def review_events(identifier: str) -> dict[str, Any]:
+    async def review_events(
+        identifier: str,
+        after_id: int = Query(default=0, ge=0),
+        limit: int = Query(default=50, ge=1, le=100),
+    ) -> dict[str, Any]:
         fixture_by_identifier(identifier)
-        events = await require_review_repository().list_for_record(identifier)
-        return {"mode": "review-events", "items": events, "disclaimer": DISCLAIMER}
+        events, next_after_id = await require_review_repository().list_for_record(
+            identifier, after_id=after_id, limit=limit,
+        )
+        return {"mode": "review-events", "items": events, "limit": limit,
+                "next_after_id": next_after_id, "disclaimer": DISCLAIMER}
 
     @app.get("/api/v1/research-gaps")
     def gaps(topic: str = Query(min_length=1, max_length=120)) -> dict[str, Any]:

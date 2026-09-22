@@ -2,6 +2,8 @@
 
 ## Unreleased — documentation and integrity audit
 
+Review-event history now uses bounded cursor pagination with a default page size of fifty and a maximum of one hundred. Clients follow `next_after_id` to retrieve subsequent pages. PostgreSQL integration coverage verifies persisted review payloads, chronological insertion order, record isolation, and continued exclusion of reviewed fixtures from citation export. Review events do not yet update the evidence read model.
+
 The documentation work begun from commit `9fddcbb` expands the academic corpus, corrects implementation claims, and standardizes attribution to CIPRIAN ȘTEFAN PLEȘCA — cercetător român independent. It preserves the author's removal of the wiki and the additional academic topics. This section describes development work, not a published v0.3.0 release. Mandatory release gates remain a separate decision under the project request and governance policy.
 
 The whitepaper now uses current evidence and multi-omics constructors, the implemented A–G mapping, and the actual navigation-score factors. It distinguishes persisted publications from synthetic evidence and graph demonstrations. The API reference now describes JSON-body PubMed ingestion, its operator key, current bounds, and title filtering. These corrections repair the explanation of existing behavior; they do not themselves repair the runtime limitations documented alongside it.

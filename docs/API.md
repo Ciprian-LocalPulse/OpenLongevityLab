@@ -83,6 +83,16 @@ Evidence grades and scores require their methodological labels. The A–G mappin
 
 Publication responses currently enforce a false synthetic flag without deriving authenticity from a verified origin model. This is a known limitation for test-seeded or otherwise manually inserted records. Clients and operators must not use that flag alone as proof that an item came from a real provider request. Correcting this requires code and schema decisions plus a regression test; documenting the limitation does not repair it.
 
+### Bounded review history
+
+Review history accepts `after_id` (a nonnegative event identifier, default zero) and `limit` (one through one hundred, default fifty). Events are ordered by their database identifier, representing insertion order rather than the reviewer-supplied timestamp. The response preserves `items`, `mode`, and `disclaimer`, and adds `limit` and `next_after_id`. Pass the returned cursor as `after_id` for the next request; a null cursor means no additional events were visible during that query. Invalid bounds return HTTP 422 with `INVALID_REQUEST`.
+
+```bash
+curl 'http://localhost:8000/api/v1/evidence/SYN-001/review-events?after_id=0&limit=20'
+```
+
+The repository fetches at most the requested limit plus one row, using the extra row to detect continuation. Cursors remain scoped to the requested evidence identifier. Concurrent writes can become visible in subsequent requests; this interface is not a frozen export snapshot. Existing clients that previously expected the entire history in one response must follow the cursor. Review events remain separate from the fixture read model and do not make synthetic records citation eligible. PostgreSQL integration tests exercise authenticated writes, persisted payloads, ordered pagination, record isolation, and fixture exclusion from citation export.
+
 ## Failure and health interpretation
 
 Request-schema failures use a structured invalid-request response. Provider failures, unavailable storage, disabled ingestion, unauthorized access, missing records, and unsupported resources represent different conditions. Preserve the error classification in client behavior. A provider outage should not become an empty-results screen suggesting no research exists, and a missing database configuration should not be described as a scientific data-quality finding.
