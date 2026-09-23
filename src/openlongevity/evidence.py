@@ -64,33 +64,71 @@ class EvidenceEngine:
             return EvidenceLevel.G
         return _LEVEL_BY_TYPE[record.study_type]
 
+    def score_components(
+        self, record: EvidenceRecord, *, as_of: datetime | None = None
+    ) -> dict[str, float | str | None]:
+        """Return auditable navigation-score components for one evidence record."""
+        scoring_time = _utc_datetime(as_of) if as_of else datetime.now(UTC)
+        base_score = _BASE_SCORE[record.study_type]
+        replication_status = record.replication_status.casefold()
+        replication_multiplier = 1.0
+        if replication_status in {"replicated", "independent"}:
+            replication_multiplier = 1.15
+        elif replication_status in {"unreplicated", "unknown"}:
+            replication_multiplier = 0.85
+
+        sample_size_multiplier = 1.0
+        if record.sample_size is not None:
+            sample_size_multiplier = min(
+                1.15, 0.85 + (record.sample_size / (record.sample_size + 200))
+            )
+
+        publication_age_years: float | None = None
+        publication_age_multiplier = 1.0
+        if record.publication_date:
+            try:
+                publication_age_years = max(
+                    0.0,
+                    (scoring_time - _parse_publication_datetime(record.publication_date)).days
+                    / 365.25,
+                )
+                publication_age_multiplier = max(0.75, 1.0 - publication_age_years * 0.01)
+            except ValueError:
+                publication_age_years = None
+
+        retraction_multiplier = (
+            0.0 if record.retraction_status is RetractionStatus.RETRACTED else 1.0
+        )
+        raw_score = (
+            base_score
+            * record.confidence
+            * replication_multiplier
+            * sample_size_multiplier
+            * publication_age_multiplier
+            * retraction_multiplier
+        )
+        bounded_score = round(min(1.0, max(0.0, raw_score)), 4)
+        return {
+            "method": "navigation-score-v1",
+            "base_score": base_score,
+            "confidence": record.confidence,
+            "replication_multiplier": replication_multiplier,
+            "sample_size_multiplier": round(sample_size_multiplier, 6),
+            "publication_age_years": round(publication_age_years, 6)
+            if publication_age_years is not None
+            else None,
+            "publication_age_multiplier": round(publication_age_multiplier, 6),
+            "retraction_multiplier": retraction_multiplier,
+            "bounded_score": bounded_score,
+        }
+
     def score(self, record: EvidenceRecord, *, as_of: datetime | None = None) -> float:
         """Return a transparent navigation score, not a validated effect estimate.
 
         ``as_of`` freezes the publication-age component for reproducible reports. When
         omitted, the current UTC time preserves the historical runtime behavior.
         """
-        scoring_time = _utc_datetime(as_of) if as_of else datetime.now(UTC)
-        score = _BASE_SCORE[record.study_type] * record.confidence
-        if record.replication_status.casefold() in {"replicated", "independent"}:
-            score *= 1.15
-        elif record.replication_status.casefold() in {"unreplicated", "unknown"}:
-            score *= 0.85
-        if record.sample_size is not None:
-            score *= min(1.15, 0.85 + (record.sample_size / (record.sample_size + 200)))
-        if record.retraction_status is RetractionStatus.RETRACTED:
-            return 0.0
-        if record.publication_date:
-            try:
-                age_years = max(
-                    0.0,
-                    (scoring_time - _parse_publication_datetime(record.publication_date)).days
-                    / 365.25,
-                )
-                score *= max(0.75, 1.0 - age_years * 0.01)
-            except ValueError:
-                pass
-        return round(min(1.0, max(0.0, score)), 4)
+        return float(self.score_components(record, as_of=as_of)["bounded_score"])
 
     def summarize(
         self, records: Iterable[EvidenceRecord], *, as_of: datetime | None = None

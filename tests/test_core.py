@@ -50,6 +50,25 @@ def test_navigation_score_accepts_explicit_scoring_time() -> None:
     assert summary["mean_navigation_score"] == engine.score(dated, as_of=early)
 
 
+def test_navigation_score_components_reconstruct_score() -> None:
+    engine = EvidenceEngine()
+    dated = record(
+        "dated-components",
+        StudyType.RCT,
+        publication_date="2020-01-01",
+        replication_status="replicated",
+        sample_size=200,
+    )
+    as_of = datetime(2021, 1, 1, tzinfo=UTC)
+
+    components = engine.score_components(dated, as_of=as_of)
+
+    assert components["method"] == "navigation-score-v1"
+    assert components["base_score"] == 0.85
+    assert components["replication_multiplier"] == 1.15
+    assert components["bounded_score"] == engine.score(dated, as_of=as_of)
+
+
 def test_gap_detector_flags_translation_gap() -> None:
     gaps = ResearchGapDetector().detect("senescence", [record("a", StudyType.ANIMAL)])
     assert gaps[0].kind == "translational_gap"

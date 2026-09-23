@@ -19,6 +19,7 @@ def evidence_record_payload(
     navigation_score: float | None = None,
     score_method: str | None = None,
     scoring_as_of: str | None = None,
+    score_components: Mapping[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Serialize an evidence record with export-relevant boundary fields."""
     payload = {**asdict(record), "synthetic": synthetic, "level": level}
@@ -26,6 +27,8 @@ def evidence_record_payload(
         payload["navigation_score"] = navigation_score
         payload["score_method"] = score_method or EVIDENCE_SCORE_METHOD_VERSION
         payload["scoring_as_of"] = scoring_as_of
+        if score_components is not None:
+            payload["score_components"] = dict(score_components)
     return payload
 
 

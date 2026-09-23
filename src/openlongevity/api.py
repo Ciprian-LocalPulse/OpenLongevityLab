@@ -317,6 +317,7 @@ def create_app(
             navigation_score=engine.score(record, as_of=scoring_time),
             score_method=EVIDENCE_SCORE_METHOD_VERSION,
             scoring_as_of=scoring_time.isoformat(),
+            score_components=engine.score_components(record, as_of=scoring_time),
         )
 
     def fixture_by_identifier(identifier: str) -> EvidenceRecord:

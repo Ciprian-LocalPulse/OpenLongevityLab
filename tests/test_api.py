@@ -113,6 +113,8 @@ def test_evidence_items_include_navigation_score_metadata() -> None:
     assert item["navigation_score"] == payload["summary"]["mean_navigation_score"]
     assert item["score_method"] == "navigation-score-v1"
     assert item["scoring_as_of"] == "2021-01-01T00:00:00+00:00"
+    assert item["score_components"]["bounded_score"] == item["navigation_score"]
+    assert item["score_components"]["method"] == "navigation-score-v1"
 
 
 def test_evidence_detail_includes_navigation_score_metadata() -> None:
