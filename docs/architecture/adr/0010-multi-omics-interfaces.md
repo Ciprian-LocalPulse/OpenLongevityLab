@@ -39,7 +39,7 @@ The cost is that integration is postponed. The interface does not by itself solv
 
 ## Metadata Requirements
 
-Each omics record should preserve sample identifier, participant identifier when available, layer, features, units or feature namespace where possible, batch, normalization method, source dataset, retrieval or creation date, and synthetic status where applicable. If the same sample appears in multiple layers, the grouping function should maintain layer separation. Duplicate sample-layer pairs should have a documented conflict policy.
+Each omics record should preserve sample identifier, participant identifier when available, layer, features, units or feature namespace where possible, batch, normalization method, source dataset, retrieval or creation date, and synthetic status where applicable. If the same sample appears in multiple layers, the grouping function should maintain layer separation. The current conflict policy rejects duplicate sample-layer pairs and rejects sample identifiers that map to conflicting participant identifiers.
 
 Batch and normalization metadata are essential. Many omics signals are sensitive to platform, reagent lot, sequencing depth, laboratory site, and preprocessing pipeline. A value without preprocessing context can be difficult to compare. OpenLongevity should not overstate cross-study comparability when normalization methods differ.
 
@@ -57,7 +57,7 @@ The platform's open-science ambition does not override participant protection. A
 
 ## Verification
 
-Tests should confirm grouping behavior, preservation of layer identity, explicit missing-layer representation, and avoidance of silent imputation. Fixtures should include complete and incomplete samples, multiple layers, duplicate attempts, and different normalization labels. Documentation examples should state whether data are synthetic or real and should avoid clinical interpretation from raw multi-omics values.
+Tests should confirm grouping behavior, preservation of layer identity, explicit missing-layer representation, and avoidance of silent imputation. Fixtures should include complete and incomplete samples, multiple layers, duplicate attempts, inconsistent participant linkage, and different normalization labels. The current suite verifies missing values, multiple layers for one sample, duplicate rejection, and participant-consistency rejection. Documentation examples should state whether data are synthetic or real and should avoid clinical interpretation from raw multi-omics values.
 
 This ADR remains accepted because it gives OpenLongevity a disciplined foundation for future multi-omics work. The project can connect layers without erasing their differences, and it can delay complex integration until methods and governance are ready.
 
@@ -71,7 +71,7 @@ The acceptance criterion is that any multi-omics output can answer three questio
 
 ## Operational Risks
 
-The operational risks are duplicate sample identifiers, inconsistent participant linkage, incompatible feature names, undocumented batch correction, and accidental exposure of sensitive individual-level records. The interface should force those issues into metadata rather than hiding them. A future ingestion workflow should reject ambiguous duplicates, record normalization state, and require explicit governance approval before handling real individual-level omics data.
+The operational risks are duplicate sample identifiers, inconsistent participant linkage, incompatible feature names, undocumented batch correction, and accidental exposure of sensitive individual-level records. The interface now rejects two of those risks at grouping time: duplicate sample-layer pairs and conflicting participant linkage. The remaining risks still need metadata, ingestion manifests, feature namespaces, normalization records, and explicit governance approval before handling real individual-level omics data.
 
 The interface should also support negative capability statements. If a dataset lacks proteomics, longitudinal follow-up, or participant linkage, the grouped view should say so directly. Clear absence is better than a smooth table that suggests completeness.
 
