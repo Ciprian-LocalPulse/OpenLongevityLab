@@ -1,5 +1,7 @@
 """Export helpers that preserve the fixture/observation boundary."""
 
+import hashlib
+import json
 from collections import Counter
 from collections.abc import Mapping
 from dataclasses import asdict
@@ -10,6 +12,12 @@ from .models import EvidenceRecord, ReviewStatus
 
 CITATION_EXPORT_SCHEMA_VERSION = "citation-export-v1"
 EVIDENCE_SCORE_METHOD_VERSION = "navigation-score-v1"
+
+
+def _stable_fingerprint(payload: Mapping[str, Any]) -> str:
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
+
 
 
 def evidence_record_payload(
@@ -95,10 +103,13 @@ def build_citation_export(
         "input_records": len(records),
         "included_records": len(included),
         "excluded_records": len(excluded),
+        "included_identifiers": [str(record.get("identifier", "")) for record in included],
+        "excluded_identifiers": [item["identifier"] for item in excluded],
         "exclusion_reasons": dict(sorted(exclusion_reasons.items())),
         "score_methods": score_methods,
         "scoring_as_of": scoring_times,
     }
+    manifest["export_fingerprint"] = _stable_fingerprint(manifest)
     return {
         "schema_version": CITATION_EXPORT_SCHEMA_VERSION,
         "mode": "citation-eligible",

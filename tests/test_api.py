@@ -138,6 +138,8 @@ def test_citation_export_excludes_synthetic_fixtures() -> None:
     assert payload["manifest"]["input_records"] == 1
     assert payload["manifest"]["exclusion_reasons"] == {"synthetic_fixture": 1}
     assert payload["manifest"]["score_methods"] == ["navigation-score-v1"]
+    assert payload["manifest"]["excluded_identifiers"] == ["SYN-001"]
+    assert len(payload["manifest"]["export_fingerprint"]) == 64
     assert payload["items"] == []
     assert payload["total"] == 0
     assert payload["excluded_total"] == 1
