@@ -19,6 +19,9 @@ def test_evidence_without_database_retains_unreviewed_fixture(
     with TestClient(create_app()) as client:
         detail = client.get("/api/v1/evidence/SYN-001").json()["item"]
         listed = client.get("/api/v1/evidence").json()["items"][0]
+    for volatile_field in ("navigation_score", "score_method", "scoring_as_of"):
+        detail.pop(volatile_field, None)
+        listed.pop(volatile_field, None)
     assert detail == listed
     assert detail["review_status"] == "unreviewed"
     assert detail["synthetic"] is True
@@ -71,10 +74,57 @@ def test_search_contract() -> None:
     assert search.json()["total"] >= 1
 
 
+def test_evidence_summary_accepts_explicit_scoring_time() -> None:
+    client = TestClient(create_app())
+    response = client.get(
+        "/api/v1/evidence",
+        params={"topic": "senescence", "scoring_as_of": "2021-01-01T00:00:00Z"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["summary"]["scoring_as_of"] == "2021-01-01T00:00:00+00:00"
+
+
+def test_evidence_summary_rejects_invalid_scoring_time() -> None:
+    client = TestClient(create_app())
+    response = client.get(
+        "/api/v1/evidence",
+        params={"topic": "senescence", "scoring_as_of": "not-a-date"},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "INVALID_SCORING_AS_OF"
+
+
 def test_missing_evidence_is_structured() -> None:
     client = TestClient(create_app())
     payload = client.get("/api/v1/evidence/unknown").json()
     assert payload["error"]["code"] == "NOT_FOUND"
+
+
+def test_evidence_items_include_navigation_score_metadata() -> None:
+    client = TestClient(create_app())
+    payload = client.get(
+        "/api/v1/evidence",
+        params={"topic": "senescence", "scoring_as_of": "2021-01-01T00:00:00Z"},
+    ).json()
+
+    item = payload["items"][0]
+    assert item["navigation_score"] == payload["summary"]["mean_navigation_score"]
+    assert item["score_method"] == "navigation-score-v1"
+    assert item["scoring_as_of"] == "2021-01-01T00:00:00+00:00"
+    assert item["score_components"]["bounded_score"] == item["navigation_score"]
+    assert item["score_components"]["method"] == "navigation-score-v1"
+
+
+def test_evidence_detail_includes_navigation_score_metadata() -> None:
+    client = TestClient(create_app())
+    response = client.get("/api/v1/evidence/SYN-001")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["item"]["score_method"] == "navigation-score-v1"
+    assert payload["item"]["scoring_as_of"] == payload["summary"]["scoring_as_of"]
 
 
 def test_citation_export_excludes_synthetic_fixtures() -> None:
@@ -84,6 +134,12 @@ def test_citation_export_excludes_synthetic_fixtures() -> None:
     payload = response.json()
     assert payload["mode"] == "citation-eligible"
     assert payload["source_mode"] == "fixture-only"
+    assert payload["manifest"]["source_mode"] == "fixture-only"
+    assert payload["manifest"]["input_records"] == 1
+    assert payload["manifest"]["exclusion_reasons"] == {"synthetic_fixture": 1}
+    assert payload["manifest"]["score_methods"] == ["navigation-score-v1"]
+    assert payload["manifest"]["excluded_identifiers"] == ["SYN-001"]
+    assert len(payload["manifest"]["export_fingerprint"]) == 64
     assert payload["items"] == []
     assert payload["total"] == 0
     assert payload["excluded_total"] == 1
