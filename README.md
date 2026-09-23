@@ -18,7 +18,7 @@ OpenLongevity develops computational tools for organizing aging research with ex
 - A transparent A–G hierarchy distinguishing in-vitro, animal, observational human, clinical, RCT, review, and computational evidence.
 - Research-gap signals for translational, replication, and source-concentration patterns.
 - A graph abstraction for gene, pathway, mechanism, biomarker, intervention, and study links.
-- Optional FastAPI routes and a typed TypeScript dashboard shell.
+- Optional FastAPI routes and a Vite-built TypeScript dashboard with browser smoke checks.
 - Read-only adapters for PubMed, Europe PMC, OpenAlex, Crossref, and ClinicalTrials.gov with provenance on every normalized record.
 - PostgreSQL-ready repositories, evidence scoring, contradiction surfacing, pathway enrichment, survival curves, biological-age baselines, and multi-omics joins.
 
@@ -56,7 +56,7 @@ The [whitepaper](WHITEPAPER.md) defines the data model, provider contract, scori
 src/openlongevity/   typed scientific core, API, and CLI
 biomarkers/          biomarker catalog and interpretation guardrails
 literature/          source adapter contracts
-apps/web/             TypeScript dashboard shell
+apps/web/             TypeScript dashboard and browser smoke checks
 packages/rust/        optional safe performance kernels
 sql/                  PostgreSQL schema
 docs/                 academic notes, architecture, evidence, and security
@@ -68,7 +68,7 @@ The project contains useful implementation work, but its parts should be assesse
 
 The publication routes use PostgreSQL when a database is configured. Search currently filters publication titles; it is not a full-text engine or a federated systematic-review search. The evidence and research-gap endpoints use synthetic fixtures, and the graph endpoint provides an illustrative response. A successful request to one of those endpoints demonstrates software behavior on that input. It does not demonstrate that live publications have traversed an automated extraction, adjudication, and scientific synthesis workflow.
 
-The existing frontend package provides TypeScript source and type-checking commands. Its current scripts named build, lint, and test invoke the compiler without emitting a production application. Consequently, successful type checking should be reported as type checking. A production website, browser interaction coverage, accessibility review, and a verified deployment are separate deliverables. Their completion requires observable artifacts rather than an inference from package names or a version string.
+The frontend package now produces a Vite production artifact and runs a Playwright-powered browser smoke script against that artifact. The smoke path verifies provenance labels, fixture boundaries, graph navigation, source navigation, an unavailable-API state, and a mobile viewport. This is stronger than compiler-only verification, but it is still not a full accessibility audit, visual-regression suite, load test, or verified production deployment. Those stronger claims require their own observed evidence.
 
 ## Installation assumptions and reproducible operation
 

@@ -34,7 +34,7 @@ The current baseline is a research prototype with partially integrated infrastru
 
 ## Immediate integrity and documentation priorities
 
-Publication-origin classification has moved from a fixed false synthetic flag to an explicit persistence contract. Synthetic seeds, manually documented records, ordinary PubMed provider-path records, and legacy unknown records now have different API semantics. Acceptance coverage includes the CI seed, ordinary PubMed search classification, a deliberately provider-shaped synthetic payload, persistence, list/detail responses, revision history, and dashboard labels for origin and synthetic state. The remaining work is deeper presentation testing: the frontend needs rendered browser checks across success, empty, unavailable, and responsive states.
+Publication-origin classification has moved from a fixed false synthetic flag to an explicit persistence contract. Synthetic seeds, manually documented records, ordinary PubMed provider-path records, and legacy unknown records now have different API semantics. Acceptance coverage includes the CI seed, ordinary PubMed search classification, a deliberately provider-shaped synthetic payload, persistence, list/detail responses, revision history, dashboard labels for origin and synthetic state, and browser smoke checks for rendered provenance boundaries. The remaining work is deeper presentation testing: empty persisted results, accessibility checks, visual regression, and production deployment evidence.
 
 Complete the documentation expansion with distinct, source-backed explanations rather than repeated filler. Every tracked Markdown file has a minimum prose target, but accuracy and implementation alignment remain separate requirements. The automated inventory should continue to expose short documents, missing attribution, and structural problems. Code examples need execution checks, and diagrams need to identify proposed components clearly. A passing word-count gate is not a substitute for editorial review.
 
@@ -50,7 +50,7 @@ Search should remain described according to its implementation. Current title fi
 
 ## Interface and deployment acceptance
 
-The web application needs a real production build and interaction checks in addition to type checking. The current compiler-only scripts do not establish a deployable application artifact. Acceptance should demonstrate navigation, loading, empty results, unavailable services, and explicit fixture labels. Accessibility and responsive behavior need examination in rendered views, not only a successful TypeScript command.
+The web application now has a Vite production build and smoke-level browser checks in addition to TypeScript checking. Acceptance should continue expanding beyond smoke coverage: empty results, loading timing, keyboard navigation, accessibility semantics, visual regression, and provider-backed publication states need rendered evidence. Responsive behavior should be checked across more than one mobile profile before release claims become stronger.
 
 Deployment should be verified against the chosen hosting environment with actual configuration and an observed URL. Record the commit deployed, build outcome, environment assumptions, and a smoke test of the intended public experience. A hosting configuration file or authenticated command-line tool is not by itself deployment evidence. Preview deployments and production publication should remain identifiable as different environments with appropriate secrets and data scope.
 
