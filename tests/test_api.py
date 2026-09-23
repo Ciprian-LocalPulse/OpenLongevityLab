@@ -71,6 +71,28 @@ def test_search_contract() -> None:
     assert search.json()["total"] >= 1
 
 
+def test_evidence_summary_accepts_explicit_scoring_time() -> None:
+    client = TestClient(create_app())
+    response = client.get(
+        "/api/v1/evidence",
+        params={"topic": "senescence", "scoring_as_of": "2021-01-01T00:00:00Z"},
+    )
+
+    assert response.status_code == 200
+    assert response.json()["summary"]["scoring_as_of"] == "2021-01-01T00:00:00+00:00"
+
+
+def test_evidence_summary_rejects_invalid_scoring_time() -> None:
+    client = TestClient(create_app())
+    response = client.get(
+        "/api/v1/evidence",
+        params={"topic": "senescence", "scoring_as_of": "not-a-date"},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "INVALID_SCORING_AS_OF"
+
+
 def test_missing_evidence_is_structured() -> None:
     client = TestClient(create_app())
     payload = client.get("/api/v1/evidence/unknown").json()

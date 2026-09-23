@@ -3,6 +3,7 @@ import secrets
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from dataclasses import asdict
+from datetime import UTC, datetime
 from os import getenv
 from typing import Any, Literal
 
@@ -168,6 +169,23 @@ def create_app(
                                       "message": "Configure and migrate PostgreSQL first"})
         return review_repository
 
+    def parse_scoring_as_of(value: str | None) -> datetime | None:
+        if value is None:
+            return None
+        try:
+            parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        except ValueError as exc:
+            raise HTTPException(
+                422,
+                {
+                    "code": "INVALID_SCORING_AS_OF",
+                    "message": "scoring_as_of must be an ISO 8601 datetime",
+                },
+            ) from exc
+        if parsed.tzinfo is None:
+            return parsed.replace(tzinfo=UTC)
+        return parsed.astimezone(UTC)
+
     @app.get("/api/v1/health")
     async def health() -> dict[str, str]:
         return {"status": "ok", "version": __version__,
@@ -251,13 +269,18 @@ def create_app(
         ) if record.identifier in events else record for record in records]
 
     @app.get("/api/v1/evidence")
-    async def evidence(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
+    async def evidence(
+        topic: str = Query(default="", max_length=120),
+        scoring_as_of: str | None = Query(default=None, max_length=40),
+    ) -> dict[str, Any]:
+        scoring_time = parse_scoring_as_of(scoring_as_of)
         records = await current_records(
             [r for r in fixtures if topic.casefold() in r.title.casefold()]
         )
         return {"items": [evidence_record_payload(r, synthetic=True, level=engine.grade(r).value)
                           for r in records], "mode": "fixture-only",
-                "summary": engine.summarize(records), "disclaimer": DISCLAIMER}
+                "summary": engine.summarize(records, as_of=scoring_time),
+                "disclaimer": DISCLAIMER}
 
     @app.get("/api/v1/evidence/export/citation")
     async def citation_export(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
