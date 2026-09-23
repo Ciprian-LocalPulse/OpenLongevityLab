@@ -43,3 +43,27 @@ def test_citation_export_excludes_synthetic_before_review_check() -> None:
     assert payload["items"] == []
     assert payload["excluded_total"] == 1
     assert payload["excluded"][0]["reason"] == "synthetic_fixture"
+
+
+def test_citation_export_manifest_summarizes_boundary_and_scoring() -> None:
+    synthetic = evidence_record_payload(
+        record("SYN-TEST"),
+        synthetic=True,
+        level="F",
+        navigation_score=0.12,
+        score_method="navigation-score-v1",
+        scoring_as_of="2021-01-01T00:00:00+00:00",
+    )
+
+    payload = build_citation_export([synthetic], source_mode="fixture-only")
+
+    assert payload["manifest"] == {
+        "schema_version": "citation-export-v1",
+        "source_mode": "fixture-only",
+        "input_records": 1,
+        "included_records": 0,
+        "excluded_records": 1,
+        "exclusion_reasons": {"synthetic_fixture": 1},
+        "score_methods": ["navigation-score-v1"],
+        "scoring_as_of": ["2021-01-01T00:00:00+00:00"],
+    }

@@ -296,7 +296,8 @@ def create_app(
         scoring_time = datetime.fromisoformat(summary["scoring_as_of"])
         payloads = [evidence_payload(r, synthetic=True, scoring_time=scoring_time)
                     for r in records]
-        return {**build_citation_export(payloads), "source_mode": "fixture-only"}
+        return {**build_citation_export(payloads, source_mode="fixture-only"),
+                "source_mode": "fixture-only"}
 
     @app.get("/api/v1/evidence/{identifier}")
     async def evidence_record(identifier: str) -> dict[str, Any]:

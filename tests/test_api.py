@@ -134,6 +134,10 @@ def test_citation_export_excludes_synthetic_fixtures() -> None:
     payload = response.json()
     assert payload["mode"] == "citation-eligible"
     assert payload["source_mode"] == "fixture-only"
+    assert payload["manifest"]["source_mode"] == "fixture-only"
+    assert payload["manifest"]["input_records"] == 1
+    assert payload["manifest"]["exclusion_reasons"] == {"synthetic_fixture": 1}
+    assert payload["manifest"]["score_methods"] == ["navigation-score-v1"]
     assert payload["items"] == []
     assert payload["total"] == 0
     assert payload["excluded_total"] == 1
