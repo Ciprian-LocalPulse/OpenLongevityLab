@@ -8,13 +8,25 @@ from .constants import DISCLAIMER
 from .models import EvidenceRecord, ReviewStatus
 
 CITATION_EXPORT_SCHEMA_VERSION = "citation-export-v1"
+EVIDENCE_SCORE_METHOD_VERSION = "navigation-score-v1"
 
 
 def evidence_record_payload(
-    record: EvidenceRecord, *, synthetic: bool, level: str
+    record: EvidenceRecord,
+    *,
+    synthetic: bool,
+    level: str,
+    navigation_score: float | None = None,
+    score_method: str | None = None,
+    scoring_as_of: str | None = None,
 ) -> dict[str, Any]:
     """Serialize an evidence record with export-relevant boundary fields."""
-    return {**asdict(record), "synthetic": synthetic, "level": level}
+    payload = {**asdict(record), "synthetic": synthetic, "level": level}
+    if navigation_score is not None:
+        payload["navigation_score"] = navigation_score
+        payload["score_method"] = score_method or EVIDENCE_SCORE_METHOD_VERSION
+        payload["scoring_as_of"] = scoring_as_of
+    return payload
 
 
 def is_synthetic_record(record: Mapping[str, Any]) -> bool:

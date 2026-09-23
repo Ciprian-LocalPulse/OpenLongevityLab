@@ -19,7 +19,11 @@ from . import __version__
 from .constants import DISCLAIMER
 from .db import Database
 from .evidence import EvidenceEngine
-from .exports import build_citation_export, evidence_record_payload
+from .exports import (
+    EVIDENCE_SCORE_METHOD_VERSION,
+    build_citation_export,
+    evidence_record_payload,
+)
 from .gaps import ResearchGapDetector
 from .models import EvidenceRecord, ReviewStatus, StudyType
 from .origins import PublicationOrigin
@@ -277,26 +281,43 @@ def create_app(
         records = await current_records(
             [r for r in fixtures if topic.casefold() in r.title.casefold()]
         )
-        return {"items": [evidence_record_payload(r, synthetic=True, level=engine.grade(r).value)
+        summary = engine.summarize(records, as_of=scoring_time)
+        scoring_time = datetime.fromisoformat(summary["scoring_as_of"])
+        return {"items": [evidence_payload(r, synthetic=True, scoring_time=scoring_time)
                           for r in records], "mode": "fixture-only",
-                "summary": engine.summarize(records, as_of=scoring_time),
-                "disclaimer": DISCLAIMER}
+                "summary": summary, "disclaimer": DISCLAIMER}
 
     @app.get("/api/v1/evidence/export/citation")
     async def citation_export(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
         records = await current_records(
             [r for r in fixtures if topic.casefold() in r.title.casefold()]
         )
-        payloads = [evidence_record_payload(r, synthetic=True, level=engine.grade(r).value)
+        summary = engine.summarize(records)
+        scoring_time = datetime.fromisoformat(summary["scoring_as_of"])
+        payloads = [evidence_payload(r, synthetic=True, scoring_time=scoring_time)
                     for r in records]
         return {**build_citation_export(payloads), "source_mode": "fixture-only"}
 
     @app.get("/api/v1/evidence/{identifier}")
     async def evidence_record(identifier: str) -> dict[str, Any]:
         record, = await current_records([fixture_by_identifier(identifier)])
-        return {"item": evidence_record_payload(
-            record, synthetic=True, level=engine.grade(record).value,
-        ), "mode": "fixture-only", "disclaimer": DISCLAIMER}
+        summary = engine.summarize([record])
+        scoring_time = datetime.fromisoformat(summary["scoring_as_of"])
+        return {"item": evidence_payload(record, synthetic=True, scoring_time=scoring_time),
+                "mode": "fixture-only", "summary": summary, "disclaimer": DISCLAIMER}
+
+
+    def evidence_payload(
+        record: EvidenceRecord, *, synthetic: bool, scoring_time: datetime
+    ) -> dict[str, Any]:
+        return evidence_record_payload(
+            record,
+            synthetic=synthetic,
+            level=engine.grade(record).value,
+            navigation_score=engine.score(record, as_of=scoring_time),
+            score_method=EVIDENCE_SCORE_METHOD_VERSION,
+            scoring_as_of=scoring_time.isoformat(),
+        )
 
     def fixture_by_identifier(identifier: str) -> EvidenceRecord:
         for record in fixtures:
@@ -327,9 +348,9 @@ def create_app(
             )
         except ValueError as exc:
             raise HTTPException(422, {"code": "INVALID_REVIEW", "message": str(exc)}) from exc
-        payload = evidence_record_payload(
-            reviewed, synthetic=True, level=engine.grade(reviewed).value
-        )
+        summary = engine.summarize([reviewed])
+        scoring_time = datetime.fromisoformat(summary["scoring_as_of"])
+        payload = evidence_payload(reviewed, synthetic=True, scoring_time=scoring_time)
         event = await require_review_repository().record_event(
             record_identifier=reviewed.identifier,
             status=reviewed.review_status.value,
