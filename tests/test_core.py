@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from openlongevity.evidence import EvidenceEngine, EvidenceLevel
 from openlongevity.gaps import ResearchGapDetector
 from openlongevity.graph import EvidenceGraph
@@ -26,6 +28,26 @@ def test_grading_and_retraction() -> None:
         )
         is EvidenceLevel.G
     )
+
+
+def test_navigation_score_accepts_explicit_scoring_time() -> None:
+    engine = EvidenceEngine()
+    dated = record(
+        "dated",
+        StudyType.RCT,
+        publication_date="2020-01-01",
+        replication_status="replicated",
+        sample_size=200,
+    )
+    early = datetime(2021, 1, 1, tzinfo=UTC)
+    later = datetime(2031, 1, 1, tzinfo=UTC)
+
+    assert engine.score(dated, as_of=early) == engine.score(dated, as_of=early)
+    assert engine.score(dated, as_of=early) > engine.score(dated, as_of=later)
+
+    summary = engine.summarize([dated], as_of=early)
+    assert summary["scoring_as_of"] == "2021-01-01T00:00:00+00:00"
+    assert summary["mean_navigation_score"] == engine.score(dated, as_of=early)
 
 
 def test_gap_detector_flags_translation_gap() -> None:
