@@ -4,6 +4,7 @@
 - `evidence/Evidence-Model.md` — record semantics and grading.
 - `biomarkers/Biomarkers.md` — measurement categories and limitations.
 - `research/Research-Gap-Detector.md` — prioritization heuristics.
+- `research/openlongevity-impact-article.md` — long-form impact article describing purpose, current stage, final target, collaboration, and donation support.
 - `security/THREAT_MODEL.md` — threats and mitigations.
 - `architecture/adr/` — decisions that affect long-term design.
 - `academic/` — thirty-one academic research notes, with expansion status and reading paths in the collection index.
@@ -12,7 +13,7 @@
 
 This directory connects the implementation of OpenLongevity with the explanations needed to inspect it. The project includes a Python research core, provider adapters, publication persistence, an API, experimental analysis utilities, and an early web interface. Those components have different maturity levels. Documentation should help readers identify what is implemented, what has been tested, and what remains a proposed research method. It should not present every topic in the directory as an available product feature.
 
-The root [README](../README.md) introduces current capabilities and installation assumptions. The [whitepaper](../WHITEPAPER.md) provides the main technical and scientific specification, including corrections to earlier examples and maturity claims. The [academic manifesto](../ACADEMIC_MANIFESTO.md) explains the project's standards for evidence and accountability. This index helps readers move from those general documents to focused references without relying on the removed wiki directory.
+The root [README](../README.md) introduces current capabilities and installation assumptions. The [whitepaper](../WHITEPAPER.md) provides the main technical and scientific specification, including corrections to earlier examples and maturity claims. The [academic manifesto](../ACADEMIC_MANIFESTO.md) explains the project's standards for evidence and accountability. The [impact article](research/openlongevity-impact-article.md) gives an external-facing academic overview of the repository, its current research-prototype stage, its intended final form, and how collaborators or donors can support the work. This index helps readers move from those general documents to focused references without relying on the removed wiki directory.
 
 ## Start from the question you need to answer
 
