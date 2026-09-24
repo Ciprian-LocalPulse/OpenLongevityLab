@@ -48,7 +48,7 @@ Synthetic records are software fixtures only and are not scientific conclusions.
 
 ## Scientific specification
 
-The [whitepaper](WHITEPAPER.md) defines the data model, provider contract, scoring equations, validation protocol, trust boundaries, and research roadmap. The [academic manifesto](ACADEMIC_MANIFESTO.md) states the review and ethics commitments behind the implementation.
+The [whitepaper](WHITEPAPER.md) defines the data model, provider contract, scoring equations, validation protocol, trust boundaries, and research roadmap. The [academic manifesto](ACADEMIC_MANIFESTO.md) states the review and ethics commitments behind the implementation. The [OpenLongevityLab impact article](docs/research/openlongevity-impact-article.md) explains the repository purpose, current maturity, intended final stage, collaboration path, and donation link in long-form academic prose.
 
 ## Repository structure
 
