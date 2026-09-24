@@ -102,9 +102,15 @@ Academic depth means that a reader can identify a question, assess assumptions, 
 
 Useful contributions include a focused bug reproduction, a parser fixture with clear redistribution rights, a correction to an overstated capability, or a reference calculation exposing an edge case. Identify the commit and environment and explain the expected behavior. Separate a software defect from a scientific disagreement: both deserve examination, but they require different evidence. Preserve the author attribution and credit the original studies and external software independently of project authorship.
 
+## Collaboration and support
+
+OpenLongevity welcomes focused collaboration from researchers, engineers, reviewers, students, and independent contributors who want transparent computational infrastructure for aging research. Useful contributions include reproducible bug reports, provider-adapter fixtures with clear redistribution rights, documentation corrections, API examples, database migration checks, benchmark proposals, and scientific-review notes that preserve uncertainty instead of replacing it with promotional certainty. Contributors should begin with [CONTRIBUTING.md](CONTRIBUTING.md), the [pull request template](.github/PULL_REQUEST_TEMPLATE.md), and the [OpenLongevityLab impact article](docs/research/openlongevity-impact-article.md) to understand the present research-prototype stage and the final platform target.
+
+Financial support is optional and helps sustain maintenance, documentation, infrastructure, and research-tool development. Support can be offered through [PayPal](https://www.paypal.com/paypalme/agentflowenterprise), with additional context in [DONATE.md](DONATE.md). A donation does not purchase a scientific conclusion, evidence grade, private dataset, review status, clinical recommendation, or claim of longevity benefit. Funding and evidence remain separate: every result must still be traceable to source records, explicit methods, stated limitations, and human review where required.
+
 ## Author
 
-**Ciprian Ștefan Pleșca** — Founder, Project Creator, Lead Maintainer, and Principal Author. See [AUTHORS.md](AUTHORS.md) and [CITATION.cff](CITATION.cff).
+**Ciprian Ștefan Pleșca** — Founder, Project Creator, Lead Maintainer, Principal Author, and independent Romanian researcher. See [AUTHORS.md](AUTHORS.md), [CITATION.cff](CITATION.cff), and [DONATE.md](DONATE.md).
 
 ## Governance and contribution
 
