@@ -22,6 +22,8 @@ from .evidence import EvidenceEngine
 from .exports import (
     EVIDENCE_SCORE_METHOD_VERSION,
     build_citation_export,
+    build_publication_export_manifest,
+    citation_export_schema,
     evidence_record_payload,
 )
 from .gaps import ResearchGapDetector
@@ -113,13 +115,19 @@ class RevisionResponse(BaseModel):
     retrieved_at: str
 
 
+_DATABASE_URL_UNSET = object()
+
+
 def create_app(
-    database_url: str | None = None, provider: PubMedProvider | None = None,
-    ingestion_key: str | None = None, review_key: str | None = None,
+    database_url: str | None | object = _DATABASE_URL_UNSET,
+    provider: PubMedProvider | None = None,
+    ingestion_key: str | None = None,
+    review_key: str | None = None,
 ) -> FastAPI:
     from .repository import EvidenceReviewRepository, PublicationRepository
 
-    database_url = database_url or getenv("DATABASE_URL")
+    if database_url is _DATABASE_URL_UNSET:
+        database_url = getenv("DATABASE_URL")
     database = Database(database_url) if database_url else None
     repository = PublicationRepository(database) if database else None
     review_repository = EvidenceReviewRepository(database) if database else None
@@ -236,6 +244,18 @@ def create_app(
         return PublicationPage(items=[PublicationResponse.model_validate(item) for item in items],
                                total=total, page=page, page_size=page_size)
 
+    @app.get("/api/v1/publications/export/manifest")
+    async def publication_export_manifest(
+        query: str = Query(default="", max_length=200),
+        page: int = Query(default=1, ge=1, le=10000),
+        page_size: int = Query(default=20, ge=1, le=100),
+    ) -> dict[str, Any]:
+        query = query.strip()
+        items, total = await require_repository().export_rows(query, page, page_size)
+        return build_publication_export_manifest(
+            items, query=query, page=page, page_size=page_size, total_matching=total,
+        )
+
     @app.get("/api/v1/publications/{identifier}", response_model=PublicationResponse)
     async def publication(identifier: str) -> PublicationResponse:
         if len(identifier) > 160:
@@ -286,6 +306,10 @@ def create_app(
         return {"items": [evidence_payload(r, synthetic=True, scoring_time=scoring_time)
                           for r in records], "mode": "fixture-only",
                 "summary": summary, "disclaimer": DISCLAIMER}
+
+    @app.get("/api/v1/evidence/export/citation/schema")
+    async def citation_export_contract() -> dict[str, Any]:
+        return citation_export_schema()
 
     @app.get("/api/v1/evidence/export/citation")
     async def citation_export(

@@ -2,6 +2,12 @@
 
 ## Unreleased — documentation and integrity audit
 
+`GET /api/v1/publications/export/manifest` now exports bounded persisted publication metadata with origin labels, revisions, content hashes, retrieval timestamps, matching totals, and a SHA-256 fingerprint covering the manifest and exported items. Each page and count use one PostgreSQL snapshot; separate page requests remain independent. This metadata inventory includes explicitly labeled synthetic records and does not grant citation eligibility. Tests cover fingerprint verification, metadata changes, database requirements, pagination bounds, and persisted revision/freshness behavior.
+
+`GET /api/v1/evidence/export/citation/schema` now exposes the citation-export contract for clients, including schema version, scoring method, required human-review metadata, known exclusion reasons, manifest fields, and the research disclaimer. This gives frontends and integrations a read-only capability-discovery path before requesting an export.
+
+`create_app(database_url=None)` now explicitly disables database-backed repositories, while `create_app()` without a database argument still reads `DATABASE_URL` from the environment. Fixture-only tests can therefore state their intended boundary directly instead of deleting CI environment variables, reducing accidental PostgreSQL coupling in tests that are not exercising persistence.
+
 Citation export now accepts `scoring_as_of` as an ISO 8601 query parameter, matching the evidence-list scoring contract. The normalized UTC time flows into the citation manifest's observed scoring-time set, allowing clients to recreate the same temporal scoring basis and compare SHA-256 export fingerprints without depending on the day the request is executed. Invalid scoring timestamps return the existing structured `INVALID_SCORING_AS_OF` error.
 
 Persisted publication responses now expose an explicit `origin` contract with `unknown`, `manual`, `provider`, and `synthetic` states plus a tri-state `synthetic` interpretation. Synthetic seeds and `SYN-*` or `SEED-*` identifiers remain synthetic even when their payload has provider-shaped metadata. Legacy rows without a documented origin are normalized conservatively as `unknown` rather than being presented as real provider retrievals. Revision history carries the normalized origin fields in each payload.

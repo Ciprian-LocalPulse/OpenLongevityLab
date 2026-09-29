@@ -11,13 +11,92 @@ from .constants import DISCLAIMER
 from .models import EvidenceRecord, ReviewStatus
 
 CITATION_EXPORT_SCHEMA_VERSION = "citation-export-v1"
+PUBLICATION_EXPORT_SCHEMA_VERSION = "publication-export-v1"
 EVIDENCE_SCORE_METHOD_VERSION = "navigation-score-v1"
+
+
+CITATION_EXPORT_EXCLUSION_REASONS = {
+    "synthetic_fixture": (
+        "Synthetic fixtures and demonstration records are excluded from "
+        "citation-eligible exports."
+    ),
+    "not_human_verified": "Records require verified human review metadata before citation export.",
+}
+CITATION_EXPORT_REQUIRED_REVIEW_FIELDS = (
+    "review_status",
+    "reviewed_by",
+    "reviewed_at",
+    "review_notes",
+)
+
+
+def citation_export_schema() -> dict[str, Any]:
+    """Describe the citation export contract for API clients and reviewers."""
+    return {
+        "schema_version": CITATION_EXPORT_SCHEMA_VERSION,
+        "mode": "citation-eligible",
+        "source_modes": ["fixture-only", "unspecified"],
+        "score_method": EVIDENCE_SCORE_METHOD_VERSION,
+        "required_review_status": ReviewStatus.VERIFIED.value,
+        "required_review_fields": list(CITATION_EXPORT_REQUIRED_REVIEW_FIELDS),
+        "exclusion_reasons": dict(CITATION_EXPORT_EXCLUSION_REASONS),
+        "manifest_fields": [
+            "schema_version",
+            "source_mode",
+            "input_records",
+            "included_records",
+            "excluded_records",
+            "included_identifiers",
+            "excluded_identifiers",
+            "exclusion_reasons",
+            "score_methods",
+            "scoring_as_of",
+            "export_fingerprint",
+        ],
+        "disclaimer": DISCLAIMER,
+    }
 
 
 def _stable_fingerprint(payload: Mapping[str, Any]) -> str:
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
 
+
+def build_publication_export_manifest(
+    records: list[Mapping[str, Any]],
+    *,
+    query: str,
+    page: int,
+    page_size: int,
+    total_matching: int,
+) -> dict[str, Any]:
+    """Fingerprint a page of persisted metadata, including freshness and origin."""
+    fields = (
+        "identifier", "title", "provider", "source_identifier", "origin", "synthetic",
+        "revision", "content_hash", "first_retrieved_at", "last_retrieved_at",
+    )
+    items = [{field: record[field] for field in fields} for record in records]
+    manifest = {
+        "schema_version": PUBLICATION_EXPORT_SCHEMA_VERSION,
+        "source_mode": "persisted-publications",
+        "query": query,
+        "page": page,
+        "page_size": page_size,
+        "total_matching": total_matching,
+        "exported_records": len(items),
+        "exported_identifiers": [item["identifier"] for item in items],
+        "revision_map": {item["identifier"]: item["revision"] for item in items},
+        "content_hashes": {item["identifier"]: item["content_hash"] for item in items},
+    }
+    manifest["export_fingerprint"] = _stable_fingerprint({"manifest": manifest, "items": items})
+    return {
+        "schema_version": PUBLICATION_EXPORT_SCHEMA_VERSION,
+        "mode": "publication-metadata-export",
+        "manifest": manifest,
+        "items": items,
+        "total": len(items),
+        "disclaimer": DISCLAIMER,
+    }
 
 
 def evidence_record_payload(

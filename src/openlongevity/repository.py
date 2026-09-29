@@ -88,6 +88,35 @@ class PublicationRepository:
             ).offset((page - 1) * page_size).limit(page_size))
             return [self.serialize(row) for row in rows], int(total or 0)
 
+    async def export_rows(
+        self, query: str, page: int, page_size: int,
+    ) -> tuple[list[dict[str, Any]], int]:
+        """Read a bounded page and its count from one PostgreSQL snapshot."""
+        async with self.database.sessions() as session:
+            await session.connection(execution_options={"isolation_level": "REPEATABLE READ"})
+            condition = PublicationRow.title.icontains(query, autoescape=True)
+            total = await session.scalar(
+                select(func.count()).select_from(PublicationRow).where(condition)
+            )
+            rows = await session.scalars(
+                select(PublicationRow).where(condition).order_by(PublicationRow.identifier)
+                .offset((page - 1) * page_size).limit(page_size)
+            )
+            return [
+                {
+                    "identifier": row.identifier,
+                    "title": row.title,
+                    "provider": row.provider,
+                    "source_identifier": row.source_identifier,
+                    **publication_origin_fields(row.payload),
+                    "revision": row.revision,
+                    "content_hash": row.content_hash,
+                    "first_retrieved_at": row.first_retrieved_at,
+                    "last_retrieved_at": row.last_retrieved_at,
+                }
+                for row in rows
+            ], int(total or 0)
+
     async def history(self, identifier: str) -> list[dict[str, Any]]:
         async with self.database.sessions() as session:
             rows = await session.scalars(select(PublicationRevisionRow).where(

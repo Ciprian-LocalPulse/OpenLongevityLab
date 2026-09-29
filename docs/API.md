@@ -7,13 +7,14 @@ pip install -e ".[dev,api,db]"
 uvicorn 'openlongevity.api:create_app' --factory --reload
 ```
 
-The service separates persisted publications from synthetic evidence demonstrations. This reference describes baseline `9fddcbb`; the running application's OpenAPI schema remains the interface to inspect for a different commit. PostgreSQL must be configured and migrated for publication operations. The operator ingestion key is an implemented control; complete user-role management and a production operating environment remain separate requirements.
+The service separates persisted publications from synthetic evidence demonstrations. This reference describes baseline `9fddcbb`; the running application's OpenAPI schema remains the interface to inspect for a different commit. PostgreSQL must be configured and migrated for publication operations. Application construction now distinguishes omitted database configuration from explicit fixture-only operation: `create_app()` reads `DATABASE_URL` from the environment, while `create_app(database_url=None)` disables database-backed repositories even if the environment contains a database URL. The operator ingestion key is an implemented control; complete user-role management and a production operating environment remain separate requirements.
 
 ## Read-only exploration
 
 ```bash
 curl http://localhost:8000/api/v1/health
 curl 'http://localhost:8000/api/v1/evidence?topic=senescence'
+curl 'http://localhost:8000/api/v1/evidence/export/citation/schema'
 curl 'http://localhost:8000/api/v1/evidence/export/citation?topic=senescence&scoring_as_of=2021-01-01T00:00:00Z'
 curl 'http://localhost:8000/api/v1/search?query=senescence&page=1&page_size=10'
 curl 'http://localhost:8000/api/v1/research-gaps?topic=senescence'
@@ -63,6 +64,71 @@ Publication responses include two related interpretation fields: `origin` and `s
 
 Publication history returns the normalized origin fields inside each revision payload. The revision content hash continues to identify the stored revision content at the time it was written; the response may also annotate legacy payloads with conservative origin fields for client clarity. Clients should therefore compare revision numbers and hashes for local history, and use `origin` and `synthetic` for interpretation. A change from `unknown` to `manual`, `provider`, or `synthetic` is a content-contract change that can create a new revision when saved through the repository.
 
+### Publication metadata export manifest
+
+`GET /api/v1/publications/export/manifest` exports a bounded page of persisted
+publication metadata under schema `publication-export-v1`. The route accepts
+`query`, `page`, and `page_size` with the same bounds and title-only filtering as
+the publication list. For example:
+
+```bash
+curl --get 'http://localhost:8000/api/v1/publications/export/manifest' \
+  --data-urlencode 'query=senescence' \
+  --data-urlencode 'page=1' --data-urlencode 'page_size=20'
+```
+
+The response mode is `publication-metadata-export`. Each item includes its local
+identifier, title, provider, source identifier, origin, tri-state synthetic label,
+revision, stored content hash, and first and last retrieval timestamps. Unknown
+origin retains `synthetic: null`; synthetic records remain explicitly marked and
+are included in this metadata inventory. Inclusion does not establish human
+review, citation eligibility, or scientific validity. The evidence citation
+export has a separate review and exclusion policy.
+
+The manifest records the normalized query, pagination parameters, total matching
+rows, exported count, ordered identifiers, revision map, and content-hash map.
+Top-level `total` counts only the exported items. An out-of-range page returns an
+empty list while retaining the matching total. Rows are ordered by identifier.
+The count and rows for one request use a PostgreSQL repeatable-read snapshot;
+separate page requests do not share a snapshot. Ingestion during a multi-page
+export can therefore change membership. This endpoint does not yet implement a
+frozen whole-corpus export or provide the complete publication payload needed to
+restore a database.
+
+The SHA-256 `export_fingerprint` covers both the manifest without its fingerprint
+field and every exported item. The exact verification procedure is:
+
+```python
+import hashlib
+import json
+
+# export is the decoded JSON response from this endpoint.
+manifest = dict(export["manifest"])
+expected = manifest.pop("export_fingerprint")
+canonical = json.dumps(
+    {"manifest": manifest, "items": export["items"]},
+    sort_keys=True, separators=(",", ":"), ensure_ascii=True,
+).encode("utf-8")
+assert hashlib.sha256(canonical).hexdigest() == expected
+```
+
+Repeated requests with identical metadata and parameters produce the same
+fingerprint. An unchanged publication retrieved again may keep its revision and
+content hash while changing `last_retrieved_at`; that freshness change changes the
+export fingerprint. A revision hash identifies repository content using the
+repository's own serialization contract. It is not the hash of this smaller
+metadata projection. The export fingerprint detects accidental changes when
+compared against a trusted saved value; it is not a signature or proof of source
+authenticity. Archive the response with the repository commit and retrieval
+context for later comparisons.
+
+Without database configuration the route returns `503 DATABASE_NOT_CONFIGURED`.
+A storage failure returns `503 DATABASE_UNAVAILABLE`; invalid pagination or an
+oversized query returns `422 INVALID_REQUEST`. Unit coverage verifies independent
+fingerprint recomputation and metadata changes. PostgreSQL integration coverage
+checks pagination, origin preservation, revision history, and refreshed retrieval
+metadata against actual persisted rows.
+
 ## Ingestion request and transaction semantics
 
 The ingestion body requires a nonempty query of at most two hundred characters and a limit between one and twenty-five, defaulting to five. Additional body fields are rejected by the request model. Whitespace-only queries are rejected when constructing the provider search query. The request should be sent by an authorized operator, and the server must have both the ingestion key and a configured publication repository before useful work can proceed.
@@ -76,6 +142,8 @@ The ingestion response uses the publication-page shape, but its total is the num
 ## Demonstration resources and scientific interpretation
 
 Evidence, evidence detail, and research-gap routes operate on synthetic fixtures at this baseline. Their behavior is useful for interface and heuristic tests. It is not a live extraction of persisted publications. The graph response is also illustrative. A frontend should label these demonstrations wherever the results appear, including copied summaries and exports, because the origin distinction can otherwise be lost when a response is separated from its route.
+
+`GET /api/v1/evidence/export/citation/schema` exposes the export contract without running an export. It reports the citation-export schema version, accepted source-mode labels, the navigation-score method version, required human-review status and metadata fields, known exclusion reasons, manifest fields, and the research disclaimer. Clients should use this route for capability discovery and validation messages instead of hard-coding policy text into a frontend. The route is read-only and does not indicate that any specific record is citation eligible.
 
 `GET /api/v1/evidence/export/citation` is the first executable export boundary for the fixture corpus. It returns `mode: citation-eligible`, an `items` list, an `excluded` list, totals for both lists, a schema version, and the research disclaimer. Under the current fixture-only evidence mode, `SYN-*` records are excluded with reason `synthetic_fixture`, so the citation-eligible item list is empty for the bundled cellular-senescence demonstration. Non-synthetic records must also carry `review_status: verified` plus reviewer identity, review timestamp, and review notes before they can enter the citation-eligible item list. This is intentional: the route proves that the platform can reject demonstration data and unverified evidence rather than allowing attractive records to leak into citation workflows.
 
