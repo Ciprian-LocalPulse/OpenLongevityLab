@@ -22,6 +22,7 @@ from .evidence import EvidenceEngine
 from .exports import (
     EVIDENCE_SCORE_METHOD_VERSION,
     build_citation_export,
+    build_publication_export_manifest,
     citation_export_schema,
     evidence_record_payload,
 )
@@ -242,6 +243,18 @@ def create_app(
         items, total = await require_repository().list(query.strip(), page, page_size)
         return PublicationPage(items=[PublicationResponse.model_validate(item) for item in items],
                                total=total, page=page, page_size=page_size)
+
+    @app.get("/api/v1/publications/export/manifest")
+    async def publication_export_manifest(
+        query: str = Query(default="", max_length=200),
+        page: int = Query(default=1, ge=1, le=10000),
+        page_size: int = Query(default=20, ge=1, le=100),
+    ) -> dict[str, Any]:
+        query = query.strip()
+        items, total = await require_repository().export_rows(query, page, page_size)
+        return build_publication_export_manifest(
+            items, query=query, page=page, page_size=page_size, total_matching=total,
+        )
 
     @app.get("/api/v1/publications/{identifier}", response_model=PublicationResponse)
     async def publication(identifier: str) -> PublicationResponse:

@@ -1,6 +1,10 @@
 from dataclasses import asdict, replace
 
-from openlongevity.exports import build_citation_export, evidence_record_payload
+from openlongevity.exports import (
+    build_citation_export,
+    build_publication_export_manifest,
+    evidence_record_payload,
+)
 from openlongevity.models import EvidenceRecord, ReviewStatus, StudyType
 
 
@@ -99,3 +103,52 @@ def test_citation_export_fingerprint_changes_with_export_boundary() -> None:
         "not_human_verified": 1,
         "synthetic_fixture": 1,
     }
+
+
+def test_publication_manifest_fingerprints_all_exported_metadata() -> None:
+    import hashlib
+    import json
+
+    publication = {
+        "identifier": "PMID:123", "title": "Metadata test", "provider": "pubmed",
+        "source_identifier": "123", "origin": "unknown", "synthetic": None,
+        "revision": 1, "content_hash": "a" * 64,
+        "first_retrieved_at": "2026-09-22T00:00:00+00:00",
+        "last_retrieved_at": "2026-09-22T00:00:00+00:00",
+    }
+    options = {"query": "Metadata", "page": 1, "page_size": 20, "total_matching": 1}
+    result = build_publication_export_manifest([publication], **options)
+    assert result == build_publication_export_manifest([publication], **options)
+    assert result["mode"] == "publication-metadata-export"
+    assert result["items"][0]["synthetic"] is None
+    manifest = dict(result["manifest"])
+    fingerprint = manifest.pop("export_fingerprint")
+    encoded = json.dumps(
+        {"manifest": manifest, "items": result["items"]}, sort_keys=True, separators=(",", ":"),
+    ).encode("utf-8")
+    assert hashlib.sha256(encoded).hexdigest() == fingerprint
+    assert manifest["revision_map"] == {"PMID:123": 1}
+    assert manifest["content_hashes"] == {"PMID:123": "a" * 64}
+    # Freshness or origin can change independently of a stored content hash.
+    for field, value in (
+        ("revision", 2), ("content_hash", "b" * 64), ("title", "Changed title"),
+        ("last_retrieved_at", "2026-09-23T00:00:00+00:00"),
+        ("origin", "manual"), ("synthetic", True),
+    ):
+        changed = build_publication_export_manifest([{**publication, field: value}], **options)
+        assert changed["manifest"]["export_fingerprint"] != fingerprint
+    changed_query = build_publication_export_manifest(
+        [publication], **{**options, "query": "test"},
+    )
+    assert changed_query["manifest"]["export_fingerprint"] != fingerprint
+
+
+def test_publication_manifest_empty_page_preserves_matching_total() -> None:
+    result = build_publication_export_manifest(
+        [], query="study", page=3, page_size=20, total_matching=25,
+    )
+    assert result["total"] == 0
+    assert result["items"] == []
+    assert result["manifest"]["total_matching"] == 25
+    assert result["manifest"]["revision_map"] == {}
+    assert result["manifest"]["exported_identifiers"] == []

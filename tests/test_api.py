@@ -261,3 +261,20 @@ def test_review_endpoint_rejects_machine_status_as_human_review() -> None:
     )
     assert response.status_code == 422
     assert response.json()["error"]["code"] == "INVALID_REVIEW"
+
+
+def test_publication_manifest_requires_explicit_database() -> None:
+    with TestClient(create_app(database_url=None)) as client:
+        response = client.get("/api/v1/publications/export/manifest")
+    assert response.status_code == 503
+    assert response.json()["error"]["code"] == "DATABASE_NOT_CONFIGURED"
+
+
+@pytest.mark.parametrize("params", [
+    {"page": 0}, {"page": 10001}, {"page_size": 0}, {"page_size": 101}, {"query": "x" * 201},
+])
+def test_publication_manifest_validates_bounds_before_storage(params: dict) -> None:
+    with TestClient(create_app(database_url=None)) as client:
+        response = client.get("/api/v1/publications/export/manifest", params=params)
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "INVALID_REQUEST"

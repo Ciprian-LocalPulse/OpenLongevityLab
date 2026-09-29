@@ -142,3 +142,66 @@ async def cleanup(database: Database, identifiers: list[str]) -> None:
             PublicationRow.identifier.in_(identifiers)
         ))
     await database.close()
+
+
+async def test_publication_manifest_pagination_revisions_and_freshness() -> None:
+    assert TEST_DATABASE_URL is not None
+    token = uuid4().hex
+    database = Database(TEST_DATABASE_URL)
+    repository = PublicationRepository(database)
+    identifiers = [f"TEST-EXPORT-{token}-{index}" for index in range(2)]
+    query = f"Export {token} 100%_"
+    initial = publication(
+        identifier=identifiers[0], source_identifier=identifiers[0],
+        title=query, origin=PublicationOrigin.UNKNOWN,
+    )
+    app = create_app(database_url=TEST_DATABASE_URL)
+    try:
+        await repository.save(initial)
+        await repository.save(replace(
+            initial, identifier=identifiers[1],
+            provenance=replace(initial.provenance, source_identifier=identifiers[1]),
+            origin=PublicationOrigin.SYNTHETIC,
+        ))
+        async with app.router.lifespan_context(app):
+            async with AsyncClient(
+                transport=ASGITransport(app=app), base_url="http://test",
+            ) as client:
+                route = "/api/v1/publications/export/manifest"
+                params = {"query": f"  {query}  ", "page_size": 1}
+                response = await client.get(route, params=params)
+                assert response.status_code == 200
+                first = response.json()
+                assert first["manifest"]["query"] == query
+                assert first["manifest"]["total_matching"] == 2
+                assert first["manifest"]["exported_identifiers"] == identifiers[:1]
+                assert first["items"][0]["synthetic"] is None
+                assert first == (await client.get(route, params=params)).json()
+                second = (await client.get(route, params={**params, "page": 2})).json()
+                assert second["items"][0]["identifier"] == identifiers[1]
+                assert second["items"][0]["synthetic"] is True
+                empty = (await client.get(route, params={**params, "page": 3})).json()
+                assert empty["items"] == []
+                assert empty["manifest"]["total_matching"] == 2
+
+                await repository.save(replace(initial, title=f"{query} revised"))
+                revised = (await client.get(route, params=params)).json()
+                assert revised["items"][0]["revision"] == 2
+                history = await repository.history(identifiers[0])
+                assert revised["items"][0]["content_hash"] == history[-1]["content_hash"]
+                assert (revised["manifest"]["export_fingerprint"]
+                        != first["manifest"]["export_fingerprint"])
+
+                await repository.save(replace(
+                    initial, title=f"{query} revised", provenance=replace(
+                        initial.provenance, retrieved_at="2026-09-23T00:00:00+00:00",
+                    ),
+                ))
+                refreshed = (await client.get(route, params=params)).json()
+                assert refreshed["items"][0]["revision"] == 2
+                assert (refreshed["manifest"]["content_hashes"]
+                        == revised["manifest"]["content_hashes"])
+                assert (refreshed["manifest"]["export_fingerprint"]
+                        != revised["manifest"]["export_fingerprint"])
+    finally:
+        await cleanup(database, identifiers)

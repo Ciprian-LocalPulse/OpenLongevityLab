@@ -2,6 +2,8 @@
 
 ## Unreleased — documentation and integrity audit
 
+`GET /api/v1/publications/export/manifest` now exports bounded persisted publication metadata with origin labels, revisions, content hashes, retrieval timestamps, matching totals, and a SHA-256 fingerprint covering the manifest and exported items. Each page and count use one PostgreSQL snapshot; separate page requests remain independent. This metadata inventory includes explicitly labeled synthetic records and does not grant citation eligibility. Tests cover fingerprint verification, metadata changes, database requirements, pagination bounds, and persisted revision/freshness behavior.
+
 `GET /api/v1/evidence/export/citation/schema` now exposes the citation-export contract for clients, including schema version, scoring method, required human-review metadata, known exclusion reasons, manifest fields, and the research disclaimer. This gives frontends and integrations a read-only capability-discovery path before requesting an export.
 
 `create_app(database_url=None)` now explicitly disables database-backed repositories, while `create_app()` without a database argument still reads `DATABASE_URL` from the environment. Fixture-only tests can therefore state their intended boundary directly instead of deleting CI environment variables, reducing accidental PostgreSQL coupling in tests that are not exercising persistence.
