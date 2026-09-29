@@ -147,7 +147,11 @@ def test_citation_export_excludes_synthetic_fixtures() -> None:
     assert payload["excluded"][0]["reason"] == "synthetic_fixture"
 
 
-def test_citation_export_accepts_reproducible_scoring_time() -> None:
+def test_citation_export_accepts_reproducible_scoring_time(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.delenv("TEST_DATABASE_URL", raising=False)
     client = TestClient(create_app())
 
     response = client.get(
