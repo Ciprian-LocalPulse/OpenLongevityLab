@@ -7,7 +7,7 @@ pip install -e ".[dev,api,db]"
 uvicorn 'openlongevity.api:create_app' --factory --reload
 ```
 
-The service separates persisted publications from synthetic evidence demonstrations. This reference describes baseline `9fddcbb`; the running application's OpenAPI schema remains the interface to inspect for a different commit. PostgreSQL must be configured and migrated for publication operations. The operator ingestion key is an implemented control; complete user-role management and a production operating environment remain separate requirements.
+The service separates persisted publications from synthetic evidence demonstrations. This reference describes baseline `9fddcbb`; the running application's OpenAPI schema remains the interface to inspect for a different commit. PostgreSQL must be configured and migrated for publication operations. Application construction now distinguishes omitted database configuration from explicit fixture-only operation: `create_app()` reads `DATABASE_URL` from the environment, while `create_app(database_url=None)` disables database-backed repositories even if the environment contains a database URL. The operator ingestion key is an implemented control; complete user-role management and a production operating environment remain separate requirements.
 
 ## Read-only exploration
 
