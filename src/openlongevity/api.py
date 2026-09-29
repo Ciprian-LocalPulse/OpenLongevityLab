@@ -288,11 +288,15 @@ def create_app(
                 "summary": summary, "disclaimer": DISCLAIMER}
 
     @app.get("/api/v1/evidence/export/citation")
-    async def citation_export(topic: str = Query(default="", max_length=120)) -> dict[str, Any]:
+    async def citation_export(
+        topic: str = Query(default="", max_length=120),
+        scoring_as_of: str | None = Query(default=None, max_length=40),
+    ) -> dict[str, Any]:
+        scoring_time = parse_scoring_as_of(scoring_as_of)
         records = await current_records(
             [r for r in fixtures if topic.casefold() in r.title.casefold()]
         )
-        summary = engine.summarize(records)
+        summary = engine.summarize(records, as_of=scoring_time)
         scoring_time = datetime.fromisoformat(summary["scoring_as_of"])
         payloads = [evidence_payload(r, synthetic=True, scoring_time=scoring_time)
                     for r in records]

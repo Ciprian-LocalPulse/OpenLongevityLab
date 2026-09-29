@@ -147,6 +147,47 @@ def test_citation_export_excludes_synthetic_fixtures() -> None:
     assert payload["excluded"][0]["reason"] == "synthetic_fixture"
 
 
+def test_citation_export_accepts_reproducible_scoring_time() -> None:
+    client = TestClient(create_app())
+
+    response = client.get(
+        "/api/v1/evidence/export/citation",
+        params={"topic": "senescence", "scoring_as_of": "2021-01-01T00:00:00Z"},
+    )
+    repeated = client.get(
+        "/api/v1/evidence/export/citation",
+        params={"topic": "senescence", "scoring_as_of": "2021-01-01T00:00:00Z"},
+    )
+    different_time = client.get(
+        "/api/v1/evidence/export/citation",
+        params={"topic": "senescence", "scoring_as_of": "2022-01-01T00:00:00Z"},
+    )
+
+    assert response.status_code == 200
+    assert repeated.status_code == 200
+    assert different_time.status_code == 200
+    payload = response.json()
+    assert payload["manifest"]["scoring_as_of"] == ["2021-01-01T00:00:00+00:00"]
+    assert payload["manifest"]["export_fingerprint"] == (
+        repeated.json()["manifest"]["export_fingerprint"]
+    )
+    assert payload["manifest"]["export_fingerprint"] != (
+        different_time.json()["manifest"]["export_fingerprint"]
+    )
+
+
+def test_citation_export_rejects_invalid_scoring_time() -> None:
+    client = TestClient(create_app())
+
+    response = client.get(
+        "/api/v1/evidence/export/citation",
+        params={"topic": "senescence", "scoring_as_of": "not-a-date"},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["error"]["code"] == "INVALID_SCORING_AS_OF"
+
+
 def test_review_endpoint_is_disabled_without_review_key() -> None:
     client = TestClient(create_app())
     response = client.post(
