@@ -22,6 +22,7 @@ from .evidence import EvidenceEngine
 from .exports import (
     EVIDENCE_SCORE_METHOD_VERSION,
     build_citation_export,
+    citation_export_schema,
     evidence_record_payload,
 )
 from .gaps import ResearchGapDetector
@@ -292,6 +293,10 @@ def create_app(
         return {"items": [evidence_payload(r, synthetic=True, scoring_time=scoring_time)
                           for r in records], "mode": "fixture-only",
                 "summary": summary, "disclaimer": DISCLAIMER}
+
+    @app.get("/api/v1/evidence/export/citation/schema")
+    async def citation_export_contract() -> dict[str, Any]:
+        return citation_export_schema()
 
     @app.get("/api/v1/evidence/export/citation")
     async def citation_export(
