@@ -2,6 +2,8 @@
 
 ## Unreleased — documentation and integrity audit
 
+Citation export now accepts `scoring_as_of` as an ISO 8601 query parameter, matching the evidence-list scoring contract. The normalized UTC time flows into the citation manifest's observed scoring-time set, allowing clients to recreate the same temporal scoring basis and compare SHA-256 export fingerprints without depending on the day the request is executed. Invalid scoring timestamps return the existing structured `INVALID_SCORING_AS_OF` error.
+
 Persisted publication responses now expose an explicit `origin` contract with `unknown`, `manual`, `provider`, and `synthetic` states plus a tri-state `synthetic` interpretation. Synthetic seeds and `SYN-*` or `SEED-*` identifiers remain synthetic even when their payload has provider-shaped metadata. Legacy rows without a documented origin are normalized conservatively as `unknown` rather than being presented as real provider retrievals. Revision history carries the normalized origin fields in each payload.
 
 PubMed parsing remains conservative: direct XML parsing and injected transports do not certify provider origin, while the ordinary built-in PubMed search path marks records as provider-derived before persistence. Tests now cover origin normalization, PubMed path classification, provider-shaped synthetic payloads, revision changes from unknown to manual origin, API list/detail/history responses, and the CI seed record's synthetic label.
