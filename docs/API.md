@@ -14,6 +14,7 @@ The service separates persisted publications from synthetic evidence demonstrati
 ```bash
 curl http://localhost:8000/api/v1/health
 curl 'http://localhost:8000/api/v1/evidence?topic=senescence'
+curl 'http://localhost:8000/api/v1/evidence/export/citation/schema'
 curl 'http://localhost:8000/api/v1/evidence/export/citation?topic=senescence&scoring_as_of=2021-01-01T00:00:00Z'
 curl 'http://localhost:8000/api/v1/search?query=senescence&page=1&page_size=10'
 curl 'http://localhost:8000/api/v1/research-gaps?topic=senescence'
@@ -76,6 +77,8 @@ The ingestion response uses the publication-page shape, but its total is the num
 ## Demonstration resources and scientific interpretation
 
 Evidence, evidence detail, and research-gap routes operate on synthetic fixtures at this baseline. Their behavior is useful for interface and heuristic tests. It is not a live extraction of persisted publications. The graph response is also illustrative. A frontend should label these demonstrations wherever the results appear, including copied summaries and exports, because the origin distinction can otherwise be lost when a response is separated from its route.
+
+`GET /api/v1/evidence/export/citation/schema` exposes the export contract without running an export. It reports the citation-export schema version, accepted source-mode labels, the navigation-score method version, required human-review status and metadata fields, known exclusion reasons, manifest fields, and the research disclaimer. Clients should use this route for capability discovery and validation messages instead of hard-coding policy text into a frontend. The route is read-only and does not indicate that any specific record is citation eligible.
 
 `GET /api/v1/evidence/export/citation` is the first executable export boundary for the fixture corpus. It returns `mode: citation-eligible`, an `items` list, an `excluded` list, totals for both lists, a schema version, and the research disclaimer. Under the current fixture-only evidence mode, `SYN-*` records are excluded with reason `synthetic_fixture`, so the citation-eligible item list is empty for the bundled cellular-senescence demonstration. Non-synthetic records must also carry `review_status: verified` plus reviewer identity, review timestamp, and review notes before they can enter the citation-eligible item list. This is intentional: the route proves that the platform can reject demonstration data and unverified evidence rather than allowing attractive records to leak into citation workflows.
 

@@ -139,6 +139,23 @@ def test_evidence_detail_includes_navigation_score_metadata() -> None:
     assert payload["item"]["scoring_as_of"] == payload["summary"]["scoring_as_of"]
 
 
+def test_citation_export_schema_describes_contract() -> None:
+    client = TestClient(create_app(database_url=None))
+
+    response = client.get("/api/v1/evidence/export/citation/schema")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["schema_version"] == "citation-export-v1"
+    assert payload["mode"] == "citation-eligible"
+    assert payload["score_method"] == "navigation-score-v1"
+    assert payload["required_review_status"] == "verified"
+    assert "reviewed_at" in payload["required_review_fields"]
+    assert "synthetic_fixture" in payload["exclusion_reasons"]
+    assert "export_fingerprint" in payload["manifest_fields"]
+    assert "medical advice" in payload["disclaimer"]
+
+
 def test_citation_export_excludes_synthetic_fixtures() -> None:
     client = TestClient(create_app())
     response = client.get("/api/v1/evidence/export/citation", params={"topic": "senescence"})

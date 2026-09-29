@@ -14,6 +14,48 @@ CITATION_EXPORT_SCHEMA_VERSION = "citation-export-v1"
 EVIDENCE_SCORE_METHOD_VERSION = "navigation-score-v1"
 
 
+CITATION_EXPORT_EXCLUSION_REASONS = {
+    "synthetic_fixture": (
+        "Synthetic fixtures and demonstration records are excluded from "
+        "citation-eligible exports."
+    ),
+    "not_human_verified": "Records require verified human review metadata before citation export.",
+}
+CITATION_EXPORT_REQUIRED_REVIEW_FIELDS = (
+    "review_status",
+    "reviewed_by",
+    "reviewed_at",
+    "review_notes",
+)
+
+
+def citation_export_schema() -> dict[str, Any]:
+    """Describe the citation export contract for API clients and reviewers."""
+    return {
+        "schema_version": CITATION_EXPORT_SCHEMA_VERSION,
+        "mode": "citation-eligible",
+        "source_modes": ["fixture-only", "unspecified"],
+        "score_method": EVIDENCE_SCORE_METHOD_VERSION,
+        "required_review_status": ReviewStatus.VERIFIED.value,
+        "required_review_fields": list(CITATION_EXPORT_REQUIRED_REVIEW_FIELDS),
+        "exclusion_reasons": dict(CITATION_EXPORT_EXCLUSION_REASONS),
+        "manifest_fields": [
+            "schema_version",
+            "source_mode",
+            "input_records",
+            "included_records",
+            "excluded_records",
+            "included_identifiers",
+            "excluded_identifiers",
+            "exclusion_reasons",
+            "score_methods",
+            "scoring_as_of",
+            "export_fingerprint",
+        ],
+        "disclaimer": DISCLAIMER,
+    }
+
+
 def _stable_fingerprint(payload: Mapping[str, Any]) -> str:
     encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
