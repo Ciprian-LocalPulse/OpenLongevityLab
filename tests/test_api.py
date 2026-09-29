@@ -12,11 +12,8 @@ from openlongevity.repository import EvidenceReviewRepository  # noqa: E402
 TEST_DATABASE_URL = os.getenv("TEST_DATABASE_URL")
 
 
-def test_evidence_without_database_retains_unreviewed_fixture(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.delenv("DATABASE_URL", raising=False)
-    with TestClient(create_app()) as client:
+def test_evidence_without_database_retains_unreviewed_fixture() -> None:
+    with TestClient(create_app(database_url=None)) as client:
         detail = client.get("/api/v1/evidence/SYN-001").json()["item"]
         listed = client.get("/api/v1/evidence").json()["items"][0]
     for volatile_field in ("navigation_score", "score_method", "scoring_as_of"):
@@ -60,6 +57,21 @@ def test_health_contract() -> None:
     health = client.get("/api/v1/health")
     assert health.status_code == 200
     assert health.json()["version"] == "0.3.0"
+
+
+def test_explicit_database_url_none_ignores_environment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(
+        "DATABASE_URL",
+        "postgresql+asyncpg://openlongevity:openlongevity@localhost:5432/openlongevity_test",
+    )
+
+    with TestClient(create_app(database_url=None)) as client:
+        health = client.get("/api/v1/health")
+
+    assert health.status_code == 200
+    assert health.json()["database"] == "not_configured"
 
 
 @pytest.mark.postgres
@@ -147,12 +159,8 @@ def test_citation_export_excludes_synthetic_fixtures() -> None:
     assert payload["excluded"][0]["reason"] == "synthetic_fixture"
 
 
-def test_citation_export_accepts_reproducible_scoring_time(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.delenv("DATABASE_URL", raising=False)
-    monkeypatch.delenv("TEST_DATABASE_URL", raising=False)
-    client = TestClient(create_app())
+def test_citation_export_accepts_reproducible_scoring_time() -> None:
+    client = TestClient(create_app(database_url=None))
 
     response = client.get(
         "/api/v1/evidence/export/citation",
@@ -206,15 +214,8 @@ def test_review_endpoint_is_disabled_without_review_key() -> None:
     assert response.status_code == 503
     assert response.json()["error"]["code"] == "REVIEW_DISABLED"
 
-def test_review_endpoint_requires_database_for_persistence(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    # Ascundem variabilele de mediu doar pentru acest test,
-    # astfel incat baza de date sa para neconfigurata
-    monkeypatch.delenv("DATABASE_URL", raising=False)
-    monkeypatch.delenv("TEST_DATABASE_URL", raising=False)
-
-    client = TestClient(create_app(review_key="review-secret"))
+def test_review_endpoint_requires_database_for_persistence() -> None:
+    client = TestClient(create_app(database_url=None, review_key="review-secret"))
     response = client.post(
         "/api/v1/evidence/SYN-001/review",
         headers={"X-Review-Key": "review-secret"},

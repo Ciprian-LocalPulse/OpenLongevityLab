@@ -113,13 +113,19 @@ class RevisionResponse(BaseModel):
     retrieved_at: str
 
 
+_DATABASE_URL_UNSET = object()
+
+
 def create_app(
-    database_url: str | None = None, provider: PubMedProvider | None = None,
-    ingestion_key: str | None = None, review_key: str | None = None,
+    database_url: str | None | object = _DATABASE_URL_UNSET,
+    provider: PubMedProvider | None = None,
+    ingestion_key: str | None = None,
+    review_key: str | None = None,
 ) -> FastAPI:
     from .repository import EvidenceReviewRepository, PublicationRepository
 
-    database_url = database_url or getenv("DATABASE_URL")
+    if database_url is _DATABASE_URL_UNSET:
+        database_url = getenv("DATABASE_URL")
     database = Database(database_url) if database_url else None
     repository = PublicationRepository(database) if database else None
     review_repository = EvidenceReviewRepository(database) if database else None

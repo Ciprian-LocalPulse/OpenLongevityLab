@@ -2,6 +2,8 @@
 
 ## Unreleased — documentation and integrity audit
 
+`create_app(database_url=None)` now explicitly disables database-backed repositories, while `create_app()` without a database argument still reads `DATABASE_URL` from the environment. Fixture-only tests can therefore state their intended boundary directly instead of deleting CI environment variables, reducing accidental PostgreSQL coupling in tests that are not exercising persistence.
+
 Citation export now accepts `scoring_as_of` as an ISO 8601 query parameter, matching the evidence-list scoring contract. The normalized UTC time flows into the citation manifest's observed scoring-time set, allowing clients to recreate the same temporal scoring basis and compare SHA-256 export fingerprints without depending on the day the request is executed. Invalid scoring timestamps return the existing structured `INVALID_SCORING_AS_OF` error.
 
 Persisted publication responses now expose an explicit `origin` contract with `unknown`, `manual`, `provider`, and `synthetic` states plus a tri-state `synthetic` interpretation. Synthetic seeds and `SYN-*` or `SEED-*` identifiers remain synthetic even when their payload has provider-shaped metadata. Legacy rows without a documented origin are normalized conservatively as `unknown` rather than being presented as real provider retrievals. Revision history carries the normalized origin fields in each payload.
