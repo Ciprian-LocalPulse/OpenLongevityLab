@@ -337,3 +337,26 @@ h3 {
     display: grid;
   }
 }
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+nav button[aria-pressed="true"] {
+  outline: 2px solid #e9fff9;
+  outline-offset: 2px;
+}
+
+.page-count {
+  align-self: center;
+}
+
+.export-status {
+  overflow-wrap: anywhere;
+}
+
+.publication-section {
+  display: grid;
+  gap: 1rem;
+}

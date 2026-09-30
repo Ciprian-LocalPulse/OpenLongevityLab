@@ -15,3 +15,5 @@ build/
 data/local/
 models/artifacts/
 target/
+
+node_modules/

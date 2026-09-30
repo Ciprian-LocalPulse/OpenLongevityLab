@@ -2,6 +2,8 @@
 
 ## Unreleased — documentation and integrity audit
 
+The dashboard now provides a dedicated Publications view with title search, ten-record pagination, and JSON metadata downloads backed by the publication export manifest. Downloads remain bound to the submitted query and displayed record revisions. Unsupported or changed export responses require a refresh; unavailable storage has a retry path. Pending responses cannot overwrite a newer dashboard view or trigger downloads after navigation. Browser coverage verifies actual JSON download contents and failure behavior at desktop and mobile sizes. The server fingerprint is preserved for the documented independent verification procedure.
+
 `GET /api/v1/publications/export/manifest` now exports bounded persisted publication metadata with origin labels, revisions, content hashes, retrieval timestamps, matching totals, and a SHA-256 fingerprint covering the manifest and exported items. Each page and count use one PostgreSQL snapshot; separate page requests remain independent. This metadata inventory includes explicitly labeled synthetic records and does not grant citation eligibility. Tests cover fingerprint verification, metadata changes, database requirements, pagination bounds, and persisted revision/freshness behavior.
 
 `GET /api/v1/evidence/export/citation/schema` now exposes the citation-export contract for clients, including schema version, scoring method, required human-review metadata, known exclusion reasons, manifest fields, and the research disclaimer. This gives frontends and integrations a read-only capability-discovery path before requesting an export.
