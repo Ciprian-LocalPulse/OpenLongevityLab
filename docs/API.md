@@ -129,6 +129,35 @@ fingerprint recomputation and metadata changes. PostgreSQL integration coverage
 checks pagination, origin preservation, revision history, and refreshed retrieval
 metadata against actual persisted rows.
 
+### Dashboard publication workflow
+
+The dashboard's **Publications** view searches persisted titles independently of
+the fixture evidence endpoint. Select the view, enter a title query, and press
+**Inspect** or Enter. An empty query browses the stored catalog. Previous and next
+controls request ten records per page; a new submitted query starts at page one.
+The displayed query remains associated with its result page while the input is
+being edited. Pagination and downloads use that submitted query, so an unfinished
+edit cannot silently change the exported selection.
+
+**Download page JSON** requests the manifest for the displayed page. The client
+checks the supported schema, request parameters, matching total, identifiers,
+revisions, titles, origin labels, and internal manifest references before creating
+a downloadable JSON file. Changed results or unsupported responses require a
+refresh. Empty pages have no download action available. API or storage failures
+produce a retryable message rather than an empty success artifact. While a download
+is being prepared, the button is disabled; leaving the view prevents a delayed
+response from starting a download on a different page.
+
+The downloaded JSON preserves the API response, including the server-provided
+fingerprint and retrieval timestamps. The browser checks the envelope and its
+relationship to the displayed records; it does not independently recompute the
+cryptographic fingerprint. Use the verification procedure above for that check.
+Freshness metadata is retrieved at download time, so this workflow is not an
+archived snapshot of the earlier search response. Page requests remain independent
+and may observe intervening database changes. Desktop and mobile browser tests
+exercise the downloaded JSON, changed revisions, unsupported schemas, storage
+failure, empty results, query encoding, and navigation during pending requests.
+
 ## Ingestion request and transaction semantics
 
 The ingestion body requires a nonempty query of at most two hundred characters and a limit between one and twenty-five, defaulting to five. Additional body fields are rejected by the request model. Whitespace-only queries are rejected when constructing the provider search query. The request should be sent by an authorized operator, and the server must have both the ingestion key and a configured publication repository before useful work can proceed.

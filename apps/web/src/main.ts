@@ -1,3 +1,5 @@
+import { matchesPublicationExport } from "./publication-export";
+
 type EvidenceItem = {
   identifier: string;
   title: string;
@@ -52,6 +54,8 @@ type PublicationPayload = {
   items: PublicationItem[];
   total: number;
   mode: string;
+  page: number;
+  page_size: number;
   disclaimer: string;
 };
 
@@ -74,9 +78,25 @@ const appRoot = document.querySelector<HTMLDivElement>("#app");
 if (!appRoot) throw new Error("Dashboard root is missing");
 const root = appRoot;
 
+type View = "evidence" | "publications" | "graph" | "sources";
 const state = {
   topic: "cellular senescence",
+  view: "evidence" as View,
+  request: 0,
 };
+
+function beginView(view: View): number {
+  state.view = view;
+  for (const button of root.querySelectorAll<HTMLButtonElement>("nav button")) {
+    button.setAttribute("aria-pressed", String(button.dataset.view === view));
+  }
+  return ++state.request;
+}
+
+function inspectTopic(): void {
+  if (state.view === "publications") void inspectPublications();
+  else void inspectEvidence();
+}
 
 renderShell();
 void updateHealth();
@@ -92,6 +112,7 @@ function renderShell(): void {
       ]),
       element("nav", { className: "toolbar", ariaLabel: "Primary dashboard views" }, [
         actionButton("Evidence", "evidence", inspectEvidence),
+        actionButton("Publications", "publications", () => inspectPublications()),
         actionButton("Knowledge Graph", "graph", inspectGraph),
         actionButton("Sources", "sources", inspectSources),
       ]),
@@ -100,7 +121,7 @@ function renderShell(): void {
       element("label", { htmlFor: "topic" }, ["Explore a topic"]),
       element("div", { className: "query-row" }, [
         input("topic", state.topic),
-        actionButton("Inspect", "inspect", inspectEvidence),
+        actionButton("Inspect", "inspect", inspectTopic),
       ]),
       element("p", { className: "status", id: "status" }, ["API status: checking..."]),
     ]),
@@ -128,9 +149,13 @@ function renderShell(): void {
   document.querySelector<HTMLInputElement>("#topic")?.addEventListener("input", (event) => {
     state.topic = (event.target as HTMLInputElement).value;
   });
+  document.querySelector<HTMLInputElement>("#topic")?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") inspectTopic();
+  });
 }
 
 async function inspectEvidence(): Promise<void> {
+  const request = beginView("evidence");
   const result = resultRegion();
   result.replaceChildren(element("p", {}, ["Loading evidence and publication context..."]));
   const topic = state.topic.trim();
@@ -142,6 +167,7 @@ async function inspectEvidence(): Promise<void> {
   const evidence = await fetchJson<EvidencePayload>(
     `/api/v1/evidence?topic=${encodeURIComponent(topic)}`,
   );
+  if (request !== state.request) return;
   if (!evidence.ok) {
     result.replaceChildren(offlineNotice("The evidence endpoint is unavailable."));
     return;
@@ -151,6 +177,7 @@ async function inspectEvidence(): Promise<void> {
     `/api/v1/search?query=${encodeURIComponent(topic)}&page=1&page_size=10`,
   );
 
+  if (request !== state.request) return;
   const sections: Node[] = [
     element("div", { className: "section-heading" }, [
       element("div", {}, [
@@ -177,10 +204,78 @@ async function inspectEvidence(): Promise<void> {
   result.replaceChildren(...sections);
 }
 
+async function inspectPublications(page = 1, query = state.topic.trim()): Promise<void> {
+  const request = beginView("publications");
+  const result = resultRegion();
+  result.replaceChildren(element("p", {}, ["Searching stored publication titles..."]));
+  const params = new URLSearchParams({ query, page: String(page), page_size: "10" });
+  const response = await fetchJson<PublicationPayload>(`/api/v1/search?${params}`);
+  if (request !== state.request) return;
+  if (!response.ok) {
+    result.replaceChildren(
+      offlineNotice("Publication search is unavailable. Check the API and database connection."),
+      actionButton("Retry publication search", "retry", () => inspectPublications(page, query)),
+    );
+    return;
+  }
+  const payload = response.data;
+  const previous = actionButton("Previous page", "previous", () => inspectPublications(page - 1, query));
+  previous.disabled = page <= 1;
+  const next = actionButton("Next page", "next", () => inspectPublications(page + 1, query));
+  next.disabled = page * 10 >= payload.total || page >= 10000;
+  const status = element("p", { className: "fineprint export-status", role: "status" });
+  const download = actionButton("Download page JSON", "export", async () => {
+    download.disabled = true;
+    status.textContent = "Preparing publication metadata export...";
+    try {
+      const exported = await fetchJson<unknown>(`/api/v1/publications/export/manifest?${params}`);
+      if (request !== state.request) return;
+      if (!exported.ok) {
+        status.textContent = "Export unavailable. Retry the download when the API and database are available.";
+        return;
+      }
+      if (!matchesPublicationExport(exported.data, { query, page, pageSize: 10, total: payload.total, items: payload.items })) {
+        status.textContent = "Export does not match this page or uses an unsupported format. Refresh publications before downloading.";
+        return;
+      }
+      const url = URL.createObjectURL(new Blob([JSON.stringify(exported.data, null, 2) + "\n"], { type: "application/json" }));
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `openlongevity-publications-page-${page}.json`;
+      document.body.append(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+      status.textContent = `Download started for ${exported.data.total} record(s). SHA-256: ${exported.data.manifest.export_fingerprint}`;
+    } catch {
+      if (request === state.request) status.textContent = "Could not prepare the download. Please try again.";
+    } finally {
+      download.disabled = payload.items.length === 0;
+    }
+  });
+  download.disabled = payload.items.length === 0;
+  result.replaceChildren(
+    element("p", { className: "fineprint" }, [
+      query ? `Publication title search: “${query}”` : "Browsing all stored publication titles.",
+    ]),
+    publicationList(payload),
+    element("div", { className: "toolbar", ariaLabel: "Publication page controls" }, [
+      previous, element("span", { className: "page-count" }, [`Page ${page} of ${Math.max(1, Math.ceil(payload.total / 10))}`]), next,
+      actionButton("Refresh publications", "refresh", () => inspectPublications(page, query)), download,
+    ]),
+    element("p", { className: "fineprint" }, [
+      "Downloads this page of metadata with revisions, origin labels and a verification fingerprint. Retrieval metadata is fetched when you download. Synthetic records remain labeled; inclusion does not establish scientific validity or citation eligibility.",
+    ]),
+    status,
+  );
+}
+
 async function inspectGraph(): Promise<void> {
+  const request = beginView("graph");
   const result = resultRegion();
   result.replaceChildren(element("p", {}, ["Loading graph demonstration..."]));
   const graph = await fetchJson<GraphPayload>("/api/v1/graph");
+  if (request !== state.request) return;
   if (!graph.ok) {
     result.replaceChildren(offlineNotice("The graph endpoint is unavailable."));
     return;
@@ -203,6 +298,7 @@ async function inspectGraph(): Promise<void> {
 }
 
 function inspectSources(): void {
+  beginView("sources");
   resultRegion().replaceChildren(
     element("div", { className: "section-heading" }, [
       element("div", {}, [
@@ -361,7 +457,7 @@ function resultRegion(): HTMLDivElement {
 
 async function fetchJson<T>(path: string): Promise<{ ok: true; data: T } | { ok: false }> {
   try {
-    const response = await fetch(path, { headers: { Accept: "application/json" } });
+    const response = await fetch(path, { headers: { Accept: "application/json" }, cache: "no-store" });
     if (!response.ok) return { ok: false };
     return { ok: true, data: await response.json() as T };
   } catch {
